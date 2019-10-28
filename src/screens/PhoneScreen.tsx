@@ -199,11 +199,11 @@ class PhoneScreen extends React.Component<PhoneScreenProps, PhoneScreenState> {
             <FontAwesomeIcon icon={faAngleLeft} size="2x" />
           </CardNavigationButton>
           <CardNavigationButton
-          type="button"
-          value="Next"
-          onClick={this.nextCard}
-          disabled={this.state.currentIndex === (StoryPrompts.length - 1)}
-          >
+            type="button"
+            value="Next"
+            onClick={this.nextCard}
+            disabled={this.state.currentIndex === (StoryPrompts.length - 1)}
+            >
             <FontAwesomeIcon icon={faAngleRight} size="2x" />
           </CardNavigationButton>
         </CardNavigation>
