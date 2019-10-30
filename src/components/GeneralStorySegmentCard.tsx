@@ -63,7 +63,10 @@ const CharacterCounter = styled.span`
 
 const maxStorySegmentLength: number = 160;
 
-class GeneralStorySegmentCard extends React.Component<GeneralStorySegmentCardProps> {
+class GeneralStorySegmentCard extends React.Component<
+  GeneralStorySegmentCardProps,
+  GeneralStorySegmentCardState
+  > {
 
   state = {
     storySegmentSectionInputIsFocused: false

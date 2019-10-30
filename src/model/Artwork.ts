@@ -1,11 +1,41 @@
-export interface Artwork {
-  id: number|'+';
+export interface ArtworkBase {
+  id?: number;
+  status: ArtworkStatus;
   title: string;
-  artist_name?: string;
-  artist_nationality?: string;
-  year?: string;
-  image_url: string;
+  artist_name: string;
+  artist_nationality: string;
+  year: string;
+}
+
+export interface Artwork extends ArtworkBase {
+  image_url?: string;
   story_segments: StorySegment[];
+}
+
+export interface ArtworkDB extends ArtworkBase {
+  story_segment_1: string;
+  story_segment_2: string;
+  story_segment_3: string;
+  story_segment_4: string;
+  story_segment_5: string;
+  image: ArtworkImageDB;
+}
+
+export interface ArtworkImageDB {
+  id: number;
+  filename: string;
+  data: ArtworkImageDataDB;
+}
+
+export interface ArtworkImageDataDB {
+  full_url: string;
+  thumbnails: ArtworkThumbnail[];
+}
+
+export enum ArtworkStatus {
+  New = 'new',
+  Published = 'published',
+  Draft = 'draft'
 }
 
 export interface ArtworkThumbnail {
