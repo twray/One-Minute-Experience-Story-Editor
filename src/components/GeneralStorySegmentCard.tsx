@@ -78,6 +78,7 @@ class GeneralStorySegmentCard extends React.Component<GeneralStorySegmentCardPro
   }
 
   render() {
+
     const {
       prompt,
       storySegment
@@ -86,6 +87,7 @@ class GeneralStorySegmentCard extends React.Component<GeneralStorySegmentCardPro
       storySegmentSectionInputIsFocused
     } = this.state;
     const storySegmentLengthRemaining = maxStorySegmentLength - storySegment.story_segment.length;
+
     return (
       <Card>
         <Prompt>
@@ -103,15 +105,8 @@ class GeneralStorySegmentCard extends React.Component<GeneralStorySegmentCardPro
           </StorySegmentSectionInput>
           {storySegmentSectionInputIsFocused &&
            storySegmentLengthRemaining < 40 &&
-           storySegmentLengthRemaining > 0 &&
-            <CharacterCounter>
+            <CharacterCounter className={storySegmentLengthRemaining === 0 ? 'warning': ''}>
               {maxStorySegmentLength - storySegment.story_segment.length} characters remaining
-            </CharacterCounter>
-          }
-          {storySegmentSectionInputIsFocused && 
-          storySegmentLengthRemaining === 0 &&
-            <CharacterCounter className="warning">
-              Keep it nice and short!
             </CharacterCounter>
           }
         </StorySegmentSection>
