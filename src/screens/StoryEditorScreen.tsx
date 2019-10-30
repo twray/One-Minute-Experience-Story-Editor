@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 
 import Phone from '../components/Phone';
@@ -28,7 +28,7 @@ interface StoryEditorScreenProps {};
 
 interface StoryEditorScreenState {
   artworks: Artwork[],
-  displayedArtwork: Artwork;
+  displayedArtwork?: Artwork;
   currentIndex: number;
 }
 
@@ -39,15 +39,7 @@ class StoryEditorScreen extends React.Component<
 
   state = {
     artworks: [],
-    displayedArtwork: {
-      status: ArtworkStatus.New,
-      title: '',
-      artist_name: '',
-      artist_nationality: '',
-      year: '',
-      image_url: '',
-      story_segments: []
-    },
+    displayedArtwork: undefined,
     currentIndex: 0
   }
 
@@ -65,25 +57,7 @@ class StoryEditorScreen extends React.Component<
       console.log('Unable to load artworks');
     }
 
-    const displayedArtwork: Artwork|undefined = this.state.artworks.find((artwork: Artwork) => {
-      return artwork.id === 6;
-    });
-    if (displayedArtwork) {
-      this.setState({displayedArtwork});
-    }
-
-  }
-
-  handleStorySegmentChange = (storySegment: StorySegment) => {
-
-    const updatedDisplayedArtwork: Artwork = Object.assign({}, this.state.displayedArtwork);
-    let storySegmentToUpdate: StorySegment|undefined = updatedDisplayedArtwork.story_segments.find((updatedStorySegment: StorySegment) => {
-      return updatedStorySegment.id === storySegment.id;
-    });
-    if (storySegmentToUpdate) {
-      storySegmentToUpdate.story_segment = storySegment.story_segment;
-      this.setState({displayedArtwork: updatedDisplayedArtwork});
-    }
+    this.setState({displayedArtwork: this.state.artworks[4]});
 
   }
 
@@ -91,20 +65,56 @@ class StoryEditorScreen extends React.Component<
     this.setState({currentIndex: newIndex});
   }
 
+  handleStorySegmentChange = (updatedStorySegment: StorySegment) => {
+
+    const updatedArtwork: Artwork = Object.assign({}, this.state.displayedArtwork);
+    updatedArtwork.story_segments = updatedArtwork.story_segments.map((storySegment: StorySegment) => {
+      if (storySegment.id === updatedStorySegment.id) {
+        return updatedStorySegment;
+      } else {
+        return storySegment;
+      }
+    });
+    this.updateArtworks(updatedArtwork);
+
+  }
+
+  handleTitleCardChange = (updatedArtwork: Artwork) => {
+    this.updateArtworks(updatedArtwork);
+  }
+
+  updateArtworks = (updatedArtwork: Artwork) => {
+    const updatedArtworks: Artwork[] = this.state.artworks.map((artworkInList: Artwork) => {
+      if (artworkInList.id === updatedArtwork.id) {
+        return updatedArtwork;
+      } else {
+        return artworkInList;
+      }
+    });
+    this.setState({artworks: updatedArtworks});
+    this.setState({displayedArtwork: updatedArtwork});
+    // TODO: Update data store when artwork meta changes, use a debouncer
+  }
+
   render() {
     const { displayedArtwork, currentIndex } = this.state;
     return (
       <StoryEditorContainer>
-        <Phone
-          artwork={displayedArtwork}
-          storyPrompts={StoryPrompts}
-          onStorySegmentChange={this.handleStorySegmentChange}
-          onCardIndexChange={this.handleCardIndexChange}
-        />
-        <ExampleArea
-          storyPrompts={StoryPrompts}
-          currentIndex={currentIndex}
-        />
+        {displayedArtwork &&
+          <Fragment>
+            <Phone
+              artwork={displayedArtwork}
+              storyPrompts={StoryPrompts}
+              onTitleCardChange={this.handleTitleCardChange}
+              onStorySegmentChange={this.handleStorySegmentChange}
+              onCardIndexChange={this.handleCardIndexChange}
+            />
+            <ExampleArea
+              storyPrompts={StoryPrompts}
+              currentIndex={currentIndex}
+            />
+          </Fragment>
+        }
       </StoryEditorContainer>
     );
   }

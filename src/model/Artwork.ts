@@ -43,6 +43,8 @@ export interface ArtworkThumbnail {
   dimension: string;
 }
 
+export type UserUpdatableArtworkMetadata = 'title'|'year'|'artist_name'|'artist_nationality';
+
 export interface StorySegment {
   id: number;
   story_segment: string;

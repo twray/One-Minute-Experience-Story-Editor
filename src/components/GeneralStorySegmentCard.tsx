@@ -1,20 +1,9 @@
-import React, {
-  ChangeEvent
-} from 'react';
+import React, { ChangeEvent } from 'react';
+
 import styled from 'styled-components';
 
 import { Card } from './Card';
 import { StoryPrompt, StorySegment } from '../model/Artwork';
-
-interface GeneralStorySegmentCardProps {
-  prompt: StoryPrompt;
-  storySegment: StorySegment;
-  onStorySegmentChange: (storySegment: StorySegment) => void;
-};
-
-interface GeneralStorySegmentCardState {
-  storySegmentSectionInputIsFocused: boolean;
-}
 
 const Prompt = styled.div`
   flex: 2;
@@ -61,6 +50,16 @@ const CharacterCounter = styled.span`
   }
 `;
 
+interface GeneralStorySegmentCardProps {
+  prompt: StoryPrompt;
+  storySegment: StorySegment;
+  onStorySegmentChange: (storySegment: StorySegment) => void;
+};
+
+interface GeneralStorySegmentCardState {
+  storySegmentSectionInputIsFocused: boolean;
+}
+
 const maxStorySegmentLength: number = 160;
 
 class GeneralStorySegmentCard extends React.Component<
@@ -104,6 +103,7 @@ class GeneralStorySegmentCard extends React.Component<
             maxLength={maxStorySegmentLength}
             onFocus={() => this.setState({storySegmentSectionInputIsFocused: true})}
             onBlur={() => this.setState({storySegmentSectionInputIsFocused: false})}
+            tabIndex={-1}
           >
           </StorySegmentSectionInput>
           {storySegmentSectionInputIsFocused &&

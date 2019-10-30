@@ -70,6 +70,7 @@ const ExampleArea: React.FC<ExampleAreaProps> = props => {
       </ExampleSection>
     </ExampleAreaContainer>
   )
+  
 };
 
 export default ExampleArea;

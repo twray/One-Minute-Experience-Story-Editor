@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,8 +16,8 @@ import {
   StoryPrompt
 } from '../model/Artwork';
 
-// TODO: Make the card carousel responsive, adjust fixed pixel width
-// value
+// TODO: Make the card carousel responsive,
+// adjust fixed pixel width value
 
 const phoneScreenWidth: number = 375;
 
@@ -95,10 +95,11 @@ const CardNavigationButton = styled.button`
 `;
 
 interface PhoneProps {
-  artwork: Artwork,
+  artwork?: Artwork,
   storyPrompts: StoryPrompt[],
-  onStorySegmentChange: (storySegment: StorySegment) => void;
   onCardIndexChange: (newIndex: number) => void;
+  onTitleCardChange: (artwork: Artwork) => void;
+  onStorySegmentChange: (storySegment: StorySegment) => void;
 }
 
 interface PhoneState {
@@ -135,61 +136,68 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
 
   render() {
     const { xOffset } = this.state;
-    const { artwork, storyPrompts } = this.props;
+    const { 
+      artwork,
+      storyPrompts,
+      onTitleCardChange,
+      onStorySegmentChange
+    } = this.props;
     return (
       <PhoneContainer>
         <PhoneScreenContainer>
           {artwork &&
-            <PhoneScreenContainerBackground
-              style={artwork ? {backgroundImage: `url('${artwork.image_url}')`} : {}}
-            />
+            <Fragment>
+              <PhoneScreenContainerBackground
+                style={artwork ? {backgroundImage: `url('${artwork.image_url}')`} : {}}
+              />
+              <CardCarousel style={
+                {
+                  transform: `translateX(-${xOffset}px)`,
+                  width: `${(storyPrompts.length * phoneScreenWidth) + phoneScreenWidth}px`
+                }
+              }>
+                <CardContainer>
+                  <TitleCard artwork={artwork} onChange={onTitleCardChange} />
+                </CardContainer>
+                {artwork && storyPrompts.map((storyPrompt: StoryPrompt, i: number) => {
+
+                    const storySegment: StorySegment = artwork.story_segments.find((storySegment: StorySegment) => {
+                      return storySegment.id === i + 1;
+                    }) || {id: 0, story_segment: ''};
+
+                    return (
+                      <CardContainer key={storyPrompt.id}>
+                        <GeneralStorySegmentCard
+                          prompt={storyPrompt}
+                          storySegment={storySegment}
+                          onStorySegmentChange={onStorySegmentChange}
+                        />
+                      </CardContainer>
+                    );
+
+                  })
+                }
+              </CardCarousel>
+              <CardNavigation>
+                <CardNavigationButton
+                  type="button"
+                  value="Prev"
+                  onClick={this.prevCard}
+                  disabled={this.state.currentIndex === 0}
+                >
+                  <FontAwesomeIcon icon={faAngleLeft} size="2x" />
+                </CardNavigationButton>
+                <CardNavigationButton
+                  type="button"
+                  value="Next"
+                  onClick={this.nextCard}
+                  disabled={this.state.currentIndex === storyPrompts.length}
+                  >
+                  <FontAwesomeIcon icon={faAngleRight} size="2x" />
+                </CardNavigationButton>
+              </CardNavigation>
+            </Fragment>
           }
-          <CardCarousel style={
-            {
-              transform: `translateX(-${xOffset}px)`,
-              width: `${(storyPrompts.length * phoneScreenWidth) + phoneScreenWidth}px`
-            }
-          }>
-            <CardContainer>
-              <TitleCard />
-            </CardContainer>
-            {artwork && storyPrompts.map((storyPrompt: StoryPrompt, i: number) => {
-
-                const storySegment: StorySegment = artwork.story_segments.find((storySegment: StorySegment) => {
-                  return storySegment.id === i + 1;
-                }) || {id: 0, story_segment: ''};
-
-                return (
-                  <CardContainer key={storyPrompt.id}>
-                    <GeneralStorySegmentCard
-                      prompt={storyPrompt}
-                      storySegment={storySegment}
-                      onStorySegmentChange={this.props.onStorySegmentChange}
-                    />
-                  </CardContainer>
-                );
-
-              })
-            }
-          </CardCarousel>
-          <CardNavigation>
-            <CardNavigationButton
-              type="button"
-              value="Prev"
-              onClick={this.prevCard}
-              disabled={this.state.currentIndex === 0}
-            >
-              <FontAwesomeIcon icon={faAngleLeft} size="2x" />
-            </CardNavigationButton>
-            <CardNavigationButton
-              type="button"
-              value="Next"
-              onClick={this.nextCard}
-              disabled={this.state.currentIndex === storyPrompts.length}
-              >
-              <FontAwesomeIcon icon={faAngleRight} size="2x" />
-            </CardNavigationButton>
-          </CardNavigation>
         </PhoneScreenContainer>
       </PhoneContainer>
     );

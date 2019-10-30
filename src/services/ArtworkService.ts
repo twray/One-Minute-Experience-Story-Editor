@@ -12,7 +12,7 @@ class ArtworkService {
 
     try {
 
-      const response = await fetch(`https://modgift.itu.dk/1mev2/_/items/artwork_test?fields=*,image.*`);
+      const response = await fetch(`https://modgift.itu.dk/1mev2/_/items/artwork?fields=*,image.*`);
       const result = await response.json();
       const { data } = result;
 
