@@ -9,7 +9,7 @@ import { StoryPrompt, StorySegment } from '../model/Artwork';
 interface GeneralStorySegmentCardProps {
   prompt: StoryPrompt;
   storySegment: StorySegment;
-  handleStorySegmentChange:(storySegment: StorySegment) => void;
+  onStorySegmentChange: (storySegment: StorySegment) => void;
 };
 
 interface GeneralStorySegmentCardState {
@@ -77,7 +77,7 @@ class GeneralStorySegmentCard extends React.Component<
       id: this.props.storySegment.id,
       story_segment: e.target.value
     }
-    this.props.handleStorySegmentChange(changedStorySegment);
+    this.props.onStorySegmentChange(changedStorySegment);
   }
 
   render() {

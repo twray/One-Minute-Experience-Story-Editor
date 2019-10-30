@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Phone from '../components/Phone';
+import ExampleArea from '../components/ExampleArea';
 
 import ArtworkService from '../services/ArtworkService';
 
@@ -28,6 +29,7 @@ interface StoryEditorScreenProps {};
 interface StoryEditorScreenState {
   artworks: Artwork[],
   displayedArtwork: Artwork;
+  currentIndex: number;
 }
 
 class StoryEditorScreen extends React.Component<
@@ -45,7 +47,8 @@ class StoryEditorScreen extends React.Component<
       year: '',
       image_url: '',
       story_segments: []
-    }
+    },
+    currentIndex: 0
   }
 
   componentDidMount() {
@@ -84,14 +87,23 @@ class StoryEditorScreen extends React.Component<
 
   }
 
+  handleCardIndexChange = (newIndex: number) => {
+    this.setState({currentIndex: newIndex});
+  }
+
   render() {
-    const { displayedArtwork } = this.state;
+    const { displayedArtwork, currentIndex } = this.state;
     return (
       <StoryEditorContainer>
         <Phone
           artwork={displayedArtwork}
           storyPrompts={StoryPrompts}
-          handleStorySegmentChange={this.handleStorySegmentChange}
+          onStorySegmentChange={this.handleStorySegmentChange}
+          onCardIndexChange={this.handleCardIndexChange}
+        />
+        <ExampleArea
+          storyPrompts={StoryPrompts}
+          currentIndex={currentIndex}
         />
       </StoryEditorContainer>
     );

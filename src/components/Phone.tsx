@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 
 import { CardContainer } from '../components/Card';
+import TitleCard from '../components/TitleCard';
 import GeneralStorySegmentCard from '../components/GeneralStorySegmentCard';
 
 import phoneShellImg from '../assets/images/phone-shell.svg';
@@ -96,7 +97,8 @@ const CardNavigationButton = styled.button`
 interface PhoneProps {
   artwork: Artwork,
   storyPrompts: StoryPrompt[],
-  handleStorySegmentChange:(storySegment: StorySegment) => void;
+  onStorySegmentChange: (storySegment: StorySegment) => void;
+  onCardIndexChange: (newIndex: number) => void;
 }
 
 interface PhoneState {
@@ -111,21 +113,23 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
     xOffset: 0
   }
 
+  setIndex = (index: number) => {
+    this.setState({
+      currentIndex: index,
+      xOffset: phoneScreenWidth * index
+    });
+    this.props.onCardIndexChange(index);
+  }
+
   nextCard = () => {
-    if (this.state.currentIndex < (this.props.storyPrompts.length - 1)) {
-      this.setState({
-        currentIndex: this.state.currentIndex + 1,
-        xOffset: this.state.xOffset + phoneScreenWidth
-      });
+    if (this.state.currentIndex < (this.props.storyPrompts.length)) {
+      this.setIndex(this.state.currentIndex + 1);
     }
   }
 
   prevCard = () => {
     if (this.state.currentIndex > 0) {
-      this.setState({
-        currentIndex: this.state.currentIndex - 1,
-        xOffset: this.state.xOffset - phoneScreenWidth
-      });
+      this.setIndex(this.state.currentIndex - 1);
     }
   }
 
@@ -146,10 +150,13 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
               width: `${(storyPrompts.length * phoneScreenWidth) + phoneScreenWidth}px`
             }
           }>
+            <CardContainer>
+              <TitleCard />
+            </CardContainer>
             {artwork && storyPrompts.map((storyPrompt: StoryPrompt, i: number) => {
 
                 const storySegment: StorySegment = artwork.story_segments.find((storySegment: StorySegment) => {
-                  return storySegment.id === (i + 1);
+                  return storySegment.id === i + 1;
                 }) || {id: 0, story_segment: ''};
 
                 return (
@@ -157,7 +164,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                     <GeneralStorySegmentCard
                       prompt={storyPrompt}
                       storySegment={storySegment}
-                      handleStorySegmentChange={this.props.handleStorySegmentChange}
+                      onStorySegmentChange={this.props.onStorySegmentChange}
                     />
                   </CardContainer>
                 );
@@ -178,7 +185,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
               type="button"
               value="Next"
               onClick={this.nextCard}
-              disabled={this.state.currentIndex === (storyPrompts.length - 1)}
+              disabled={this.state.currentIndex === storyPrompts.length}
               >
               <FontAwesomeIcon icon={faAngleRight} size="2x" />
             </CardNavigationButton>
