@@ -80,7 +80,7 @@ class StoryEditorScreen extends React.Component<
     }
 
     // TEST: Display Artwork from DB
-    this.setState({displayedArtwork: this.state.artworks[4]});
+    this.setState({displayedArtwork: this.state.artworks[2]});
 
     // TEST: Display Empty Artwork
     /*
@@ -100,8 +100,11 @@ class StoryEditorScreen extends React.Component<
     this.setState({currentIndex: newIndex});
   }
 
-  handleStorySegmentChange = (updatedStorySegment: StorySegment) => {
+  handleTitleCardChange = (updatedArtwork: Artwork) => {
+    this.updateArtworks(updatedArtwork);
+  }
 
+  handleStorySegmentChange = (updatedStorySegment: StorySegment) => {
     const updatedArtwork: Artwork = Object.assign({}, this.state.displayedArtwork);
     updatedArtwork.story_segments = updatedArtwork.story_segments.map((storySegment: StorySegment) => {
       if (storySegment.id === updatedStorySegment.id) {
@@ -111,11 +114,10 @@ class StoryEditorScreen extends React.Component<
       }
     });
     this.updateArtworks(updatedArtwork);
-
   }
 
-  handleTitleCardChange = (updatedArtwork: Artwork) => {
-    this.updateArtworks(updatedArtwork);
+  handleTitleCardImageSelect = (artwork: Artwork, imageDataBase64: string, imageFilename: string) => {
+    this.artworkService.updateArtworkImage(artwork, imageDataBase64, imageFilename);
   }
 
   updateArtworks = async (updatedArtwork: Artwork) => {
@@ -131,7 +133,6 @@ class StoryEditorScreen extends React.Component<
     if (updatedArtwork.status !== ArtworkStatus.New) {
       this.artworkService.updateArtwork(updatedArtwork);
     }
-
   }
 
   render() {
@@ -145,6 +146,7 @@ class StoryEditorScreen extends React.Component<
               storyPrompts={StoryPrompts}
               onTitleCardChange={this.handleTitleCardChange}
               onStorySegmentChange={this.handleStorySegmentChange}
+              onTitleCardImageSelect={this.handleTitleCardImageSelect}
               onCardIndexChange={this.handleCardIndexChange}
             />
             <ExampleArea

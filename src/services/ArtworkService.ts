@@ -98,7 +98,7 @@ class ArtworkService {
           story_segment_2: artwork.story_segments[1].story_segment,
           story_segment_3: artwork.story_segments[2].story_segment,
           story_segment_4: artwork.story_segments[3].story_segment,
-          story_segment_5: artwork.story_segments[4].story_segment,
+          story_segment_5: artwork.story_segments[4].story_segment
         };
 
         await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}`, {
@@ -120,6 +120,56 @@ class ArtworkService {
       }
 
     }, this.UPDATE_SERVICE_DEBOUNCE_TIME);
+
+  }
+
+  async updateArtworkImage(artwork: Artwork, imageDataBase64: string, imageFilename: string) {
+
+    if (artwork.status === ArtworkStatus.New) {
+      throw new Error('Cannot update artwork image: artwork does not exist');
+    }
+
+    try {
+
+      if (!AuthenticationService.token) {
+        throw new Error('Unable to update the artwork due to the user not being logged in');
+      }
+
+      const response = await fetch(`${this.API_ROOT}/files`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + AuthenticationService.token
+        },
+        body: JSON.stringify({
+          filename: imageFilename,
+          data: imageDataBase64
+        })
+      });
+      const result = await response.json();
+      const imageID: number = result && result.data && result.data.id;
+
+      console.log(result);
+
+      if (imageID == null) {
+        throw new Error('A problem occurred while uploading the image');
+      }
+
+      await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + AuthenticationService.token
+        },
+        body: JSON.stringify({image: imageID})
+      });
+
+    } catch (e) {
+
+      console.error('Unable to update artwork image.');
+      throw(e);
+
+    }
 
   }
 

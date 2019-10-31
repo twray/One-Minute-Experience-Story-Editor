@@ -34,7 +34,8 @@ const ImageFilePicker = styled.input`
 
 interface TitleCardProps {
   artwork: Artwork;
-  onChange: (artwork: Artwork) => void
+  onChange: (artwork: Artwork) => void;
+  onImageSelect: (artwork: Artwork, imageDataBase64: string, imageFilename: string) => void;
 };
 
 interface TitleCardState {};
@@ -54,6 +55,7 @@ class TitleCard extends React.Component<
     if (e.target.files && e.target.files.length > 0) {
       try {
         const imageFile: File = e.target.files[0];
+        const imageFilename: string = imageFile.name;
         const reader = new FileReader();
         reader.readAsDataURL(imageFile);
         const fileData: string|ArrayBuffer|null = await new Promise((resolve, reject) => { 
@@ -62,6 +64,7 @@ class TitleCard extends React.Component<
         });
         if (typeof fileData === 'string') {
           this.updateArtworkField('image_url', fileData);
+          this.props.onImageSelect(this.props.artwork, fileData, imageFilename);
         }
       } catch (e) {
         console.log('A problem occurred while loading the image file.');
