@@ -6,13 +6,16 @@ import {
 
 class ArtworkService {
 
+  API_ROOT: string = process.env.REACT_APP_SERVER_API_ROOT || '';
+  DB_TABLE: string = process.env.REACT_APP_DB_TABLE || '';
+
   async loadAllArtworks(): Promise<Artwork[]> {
 
     let artworks: Artwork[] = [];
 
     try {
 
-      const response = await fetch(`https://modgift.itu.dk/1mev2/_/items/artwork?fields=*,image.*`);
+      const response = await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*`);
       const result = await response.json();
       const { data } = result;
 

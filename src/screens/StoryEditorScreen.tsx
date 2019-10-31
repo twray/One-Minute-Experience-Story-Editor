@@ -4,13 +4,13 @@ import styled from 'styled-components';
 import Phone from '../components/Phone';
 import ExampleArea from '../components/ExampleArea';
 
+import AuthenticationService from '../services/AuthenticationService';
 import ArtworkService from '../services/ArtworkService';
 
 import { StoryPrompts } from '../data/StoryPrompts';
 
 import {
   Artwork,
-  ArtworkStatus,
   StorySegment
 } from '../model/Artwork';
 
@@ -44,7 +44,26 @@ class StoryEditorScreen extends React.Component<
   }
 
   componentDidMount() {
-    this.loadArtworks();
+    this.init();
+  }
+
+  init = async () => {
+    await this.login();
+    await this.loadArtworks();
+  }
+
+  login = async () => {
+    // TEST: Login
+    const authenticationService = new AuthenticationService();
+    try {
+      await authenticationService.login(
+        process.env.REACT_APP_MOCK_USERNAME || '',
+        process.env.REACT_APP_MOCK_PASSWORD || ''
+      );
+    } catch (e) {
+      console.log('Unable to login');
+      console.log(e);
+    }
   }
 
   loadArtworks = async () => {
@@ -58,9 +77,10 @@ class StoryEditorScreen extends React.Component<
     }
 
     // TEST: Display Artwork from DB
-    // this.setState({displayedArtwork: this.state.artworks[4]});
+    this.setState({displayedArtwork: this.state.artworks[2]});
 
     // TEST: Display Empty Artwork
+    /*
     this.setState({displayedArtwork: {
       status: ArtworkStatus.New,
       title: '',
@@ -69,6 +89,7 @@ class StoryEditorScreen extends React.Component<
       artist_nationality: '',
       story_segments: []
     }});
+    */
 
   }
 
