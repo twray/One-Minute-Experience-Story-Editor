@@ -64,13 +64,13 @@ const ExampleArea: React.FC<ExampleAreaProps> = props => {
       </TitleSection>
       <ExampleSection>
         <Example>
-          {currentIndex === 0 && 'You need to provide at least a title and image of the artwork. If possible, try and provide a high quality image of the work.'}
+          {currentIndex === 0 && 'You need to provide at least a title and image of the artwork. If possible, try and provide a high quality photo of the work.'}
           {currentIndex > 0 && exampleText}
         </Example>
       </ExampleSection>
     </ExampleAreaContainer>
   )
-  
+
 };
 
 export default ExampleArea;

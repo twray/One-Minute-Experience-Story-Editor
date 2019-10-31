@@ -1,11 +1,15 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, RefObject, createRef } from 'react';
 
 import styled from 'styled-components';
 
 import { Card } from './Card';
+import Button from './Button';
 import SingleLineInput from './SingleLineInput';
 
-import { Artwork, UserUpdatableArtworkMetadata } from '../model/Artwork';
+import {
+  Artwork,
+  UserUpdatableArtworkMetadata
+} from '../model/Artwork';
 
 const ArtworkInfoForm = styled.div`
   display: flex;
@@ -19,7 +23,14 @@ const ArtworkImagePicker = styled.div`
   background-position: center center;
   background-size: cover;
   background-color: #DDDDDD;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
+
+const ImageFilePicker = styled.input`
+  display: none;
+`
 
 interface TitleCardProps {
   artwork: Artwork;
@@ -39,8 +50,29 @@ class TitleCard extends React.Component<
     this.props.onChange(updatedArtwork);
   }
 
+  handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      try {
+        const imageFile: File = e.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(imageFile);
+        const fileData: string|ArrayBuffer|null = await new Promise((resolve, reject) => { 
+          reader.onload = () => resolve(reader.result)
+          reader.onerror = () => reject();
+        });
+        if (typeof fileData === 'string') {
+          this.updateArtworkField('image_url', fileData);
+        }
+      } catch (e) {
+        console.log('A problem occurred while loading the image file.');
+        console.log(e);
+      }
+    }
+  }
+
   render() {
     const { artwork } = this.props;
+    const imageFilePickerRef: RefObject<HTMLInputElement> = createRef<HTMLInputElement>();
     return (
       <Card>
         <ArtworkInfoForm>
@@ -83,6 +115,22 @@ class TitleCard extends React.Component<
         <ArtworkImagePicker
           style={{backgroundImage: `url('${artwork.image_url}')`}}
         >
+          <Button
+            buttonStyle="white-transparent"
+            buttonSize="md"
+            text={
+              !artwork.image_url
+                ? 'Add Photo ...'
+                : 'Change Photo ...'
+            }
+            onClick={() => imageFilePickerRef.current && imageFilePickerRef.current.click()}
+          />
+          <ImageFilePicker
+            ref={imageFilePickerRef}
+            type="file"
+            accept="image/*"
+            onChange={this.handleImageSelect}
+          />
         </ArtworkImagePicker>
       </Card>
     )

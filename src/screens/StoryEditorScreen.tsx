@@ -57,7 +57,18 @@ class StoryEditorScreen extends React.Component<
       console.log('Unable to load artworks');
     }
 
-    this.setState({displayedArtwork: this.state.artworks[4]});
+    // TEST: Display Artwork from DB
+    // this.setState({displayedArtwork: this.state.artworks[4]});
+
+    // TEST: Display Empty Artwork
+    this.setState({displayedArtwork: {
+      status: ArtworkStatus.New,
+      title: '',
+      year: '',
+      artist_name: '',
+      artist_nationality: '',
+      story_segments: []
+    }});
 
   }
 
