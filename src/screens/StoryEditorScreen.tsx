@@ -11,6 +11,7 @@ import { StoryPrompts } from '../data/StoryPrompts';
 
 import {
   Artwork,
+  ArtworkStatus,
   StorySegment
 } from '../model/Artwork';
 
@@ -36,6 +37,8 @@ class StoryEditorScreen extends React.Component<
     StoryEditorScreenProps,
     StoryEditorScreenState
   > {
+
+  artworkService: ArtworkService = new ArtworkService();
 
   state = {
     artworks: [],
@@ -69,15 +72,15 @@ class StoryEditorScreen extends React.Component<
   loadArtworks = async () => {
 
     try {
-      const artworkService = new ArtworkService();
-      const artworks = await artworkService.loadAllArtworks();
+      const artworks = await this.artworkService.loadAllArtworks();
       this.setState({artworks});
     } catch (e) {
       console.log('Unable to load artworks');
+      throw e;
     }
 
     // TEST: Display Artwork from DB
-    this.setState({displayedArtwork: this.state.artworks[2]});
+    this.setState({displayedArtwork: this.state.artworks[4]});
 
     // TEST: Display Empty Artwork
     /*
@@ -115,7 +118,7 @@ class StoryEditorScreen extends React.Component<
     this.updateArtworks(updatedArtwork);
   }
 
-  updateArtworks = (updatedArtwork: Artwork) => {
+  updateArtworks = async (updatedArtwork: Artwork) => {
     const updatedArtworks: Artwork[] = this.state.artworks.map((artworkInList: Artwork) => {
       if (artworkInList.id === updatedArtwork.id) {
         return updatedArtwork;
@@ -125,7 +128,10 @@ class StoryEditorScreen extends React.Component<
     });
     this.setState({artworks: updatedArtworks});
     this.setState({displayedArtwork: updatedArtwork});
-    // TODO: Update data store when artwork meta changes, use a debouncer
+    if (updatedArtwork.status !== ArtworkStatus.New) {
+      this.artworkService.updateArtwork(updatedArtwork);
+    }
+
   }
 
   render() {

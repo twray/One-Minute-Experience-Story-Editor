@@ -18,7 +18,7 @@ export interface ArtworkDB extends ArtworkBase {
   story_segment_3: string;
   story_segment_4: string;
   story_segment_5: string;
-  image: ArtworkImageDB;
+  image?: ArtworkImageDB;
 }
 
 export interface ArtworkImageDB {
