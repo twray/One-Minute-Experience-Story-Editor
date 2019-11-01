@@ -55,14 +55,16 @@ interface ButtonProps {
   text: string;
   buttonStyle?: ButtonStyle,
   buttonSize?: ButtonSize,
+  disabled: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
 const Button: React.FC<ButtonProps> = (props) => {
-  const { text, buttonStyle, buttonSize, onClick } = props;
+  const { text, buttonStyle, buttonSize, disabled, onClick } = props;
   return (
     <ButtonContainer
       className={classNames(buttonStyle, buttonSize)}
+      disabled={disabled}
       onClick={onClick}
     >
       {text}

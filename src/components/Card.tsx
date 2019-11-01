@@ -11,6 +11,7 @@ export const CardContainer = styled.div`
 `;
 
 export const Card = styled.div`
+  position: relative;
   width: 80%;
   height: 100%;
   border-radius: 12px;

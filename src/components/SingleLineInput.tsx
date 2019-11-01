@@ -49,11 +49,12 @@ interface SingleLineInputProps {
   value?: string;
   placeholder?: string;
   isOptional?: boolean;
+  disabled: boolean;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 };
 
 const SingleLineInput: React.FC<SingleLineInputProps> = props => {
-  const { label, value, placeholder, isOptional, onChange } = props;
+  const { label, value, placeholder, isOptional, disabled, onChange } = props;
   return (
     <SingleLineInputContainer>
       {label && <Label htmlFor={'label-' + label.toLowerCase()}>{label}</Label>}
@@ -63,6 +64,7 @@ const SingleLineInput: React.FC<SingleLineInputProps> = props => {
         type="text"
         value={value ? value : ''}
         placeholder={placeholder ? placeholder : ''}
+        disabled={disabled}
         {...(onChange && {onChange: props.onChange})}
       />
     </SingleLineInputContainer>

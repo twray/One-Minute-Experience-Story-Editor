@@ -16,6 +16,34 @@ class ArtworkService {
 
   throttler: number|undefined;
 
+  private artworkDBToArtwork(artworkDB: ArtworkDB): Artwork {
+
+    console.log(artworkDB);
+
+    const artworkThumbnail: ArtworkThumbnail|undefined = artworkDB.image && artworkDB.image.data && artworkDB.image.data.thumbnails.find((artworkThumbnail: ArtworkThumbnail) => {
+      return artworkThumbnail.dimension === "1024x1024";
+    });
+    const artworkThumbnailImageURL = artworkThumbnail ? artworkThumbnail.url : '';
+
+    return {
+      id: artworkDB.id,
+      status: artworkDB.status,
+      title: artworkDB.title,
+      artist_name: artworkDB.artist_name,
+      artist_nationality: artworkDB.artist_nationality,
+      year: artworkDB.year,
+      image_url: artworkThumbnailImageURL,
+      story_segments: [
+        {id: 1, story_segment: artworkDB.story_segment_1},
+        {id: 2, story_segment: artworkDB.story_segment_2},
+        {id: 3, story_segment: artworkDB.story_segment_3},
+        {id: 4, story_segment: artworkDB.story_segment_4},
+        {id: 5, story_segment: artworkDB.story_segment_5}
+      ]
+    }
+
+  }
+
   async loadAllArtworks(): Promise<Artwork[]> {
 
     let artworks: Artwork[] = [];
@@ -33,32 +61,7 @@ class ArtworkService {
       });
       const result = await response.json();
       const { data } = result;
-
-      artworks = data.map((artworkDB: ArtworkDB): Artwork => {
-
-        const artworkThumbnail: ArtworkThumbnail|undefined = artworkDB.image && artworkDB.image.data.thumbnails.find((artworkThumbnail: ArtworkThumbnail) => {
-          return artworkThumbnail.dimension === "1024x1024";
-        });
-        const artworkThumbnailImageURL = artworkThumbnail ? artworkThumbnail.url : '';
-
-        return {
-          id: artworkDB.id,
-          status: artworkDB.status,
-          title: artworkDB.title,
-          artist_name: artworkDB.artist_name,
-          artist_nationality: artworkDB.artist_nationality,
-          year: artworkDB.year,
-          image_url: artworkThumbnailImageURL,
-          story_segments: [
-            {id: 1, story_segment: artworkDB.story_segment_1},
-            {id: 2, story_segment: artworkDB.story_segment_2},
-            {id: 3, story_segment: artworkDB.story_segment_3},
-            {id: 4, story_segment: artworkDB.story_segment_4},
-            {id: 5, story_segment: artworkDB.story_segment_5}
-          ]
-        }
-
-      });
+      artworks = data.map((artworkDB: ArtworkDB): Artwork => this.artworkDBToArtwork(artworkDB));
 
     } catch (e) {
 
@@ -71,16 +74,72 @@ class ArtworkService {
 
   };
 
-  async updateArtwork(artwork: Artwork) {
+  async updateArtwork(artwork: Artwork): Promise<Artwork> {
 
-    if (artwork.status === ArtworkStatus.New) {
-      throw new Error('Cannot update artwork: artwork does not exist');
-    }
+    return new Promise<Artwork>(async (resolve, reject) => {
 
-    clearTimeout(this.throttler);
-    this.throttler = setTimeout(async () => {
+      if (artwork.status === ArtworkStatus.New) {
+        throw new Error('Cannot update artwork: artwork does not exist');
+      }
 
-      console.log('updating artwork');
+      clearTimeout(this.throttler);
+      this.throttler = setTimeout(async () => {
+
+        console.log('updating artwork');
+
+        try {
+
+          if (!AuthenticationService.token) {
+            throw new Error('Unable to update the artwork due to the user not being logged in');
+          }
+
+          const artworkDB: ArtworkDB = {
+            status: artwork.status,
+            title: artwork.title,
+            year: artwork.year,
+            artist_name: artwork.artist_name,
+            artist_nationality: artwork.artist_nationality,
+            story_segment_1: artwork.story_segments[0].story_segment,
+            story_segment_2: artwork.story_segments[1].story_segment,
+            story_segment_3: artwork.story_segments[2].story_segment,
+            story_segment_4: artwork.story_segments[3].story_segment,
+            story_segment_5: artwork.story_segments[4].story_segment
+          };
+
+          const response = await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}?fields=*,image.*`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + AuthenticationService.token
+            },
+            body: JSON.stringify(artworkDB)
+          });
+          const result = await response.json();
+          const { data } = result;
+          resolve(this.artworkDBToArtwork(data));
+
+        } catch (e) {
+
+          console.error('Unable to update artwork.');
+          reject(e);
+
+        }
+
+      }, this.UPDATE_SERVICE_DEBOUNCE_TIME);
+
+    })
+
+  }
+
+  async updateArtworkImage(artwork: Artwork, imageFile: File, imageFilename: string): Promise<Artwork> {
+
+    return new Promise<Artwork>(async (resolve, reject) => {
+
+      if (artwork.status === ArtworkStatus.New) {
+        throw new Error('Cannot update artwork image: artwork does not exist');
+      }
+
+      console.log('updating artwork image');
 
       try {
 
@@ -88,90 +147,46 @@ class ArtworkService {
           throw new Error('Unable to update the artwork due to the user not being logged in');
         }
 
-        const artworkDB: ArtworkDB = {
-          status: artwork.status,
-          title: artwork.title,
-          year: artwork.year,
-          artist_name: artwork.artist_name,
-          artist_nationality: artwork.artist_nationality,
-          story_segment_1: artwork.story_segments[0].story_segment,
-          story_segment_2: artwork.story_segments[1].story_segment,
-          story_segment_3: artwork.story_segments[2].story_segment,
-          story_segment_4: artwork.story_segments[3].story_segment,
-          story_segment_5: artwork.story_segments[4].story_segment
-        };
+        const formBody = new FormData();
+        formBody.append('filename', imageFilename);
+        formBody.append('data', imageFile);
 
-        await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}`, {
+        let response, result;
+
+        response = await fetch(`${this.API_ROOT}/files`, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + AuthenticationService.token
+          },
+          body: formBody
+        });
+        result = await response.json();
+        const imageID: number = result && result.data && result.data.id;
+
+        if (imageID == null) {
+          throw new Error('A problem occurred while uploading the image');
+        }
+
+        response = await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}?fields=*,image.*`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + AuthenticationService.token
           },
-          body: JSON.stringify(artworkDB)
+          body: JSON.stringify({image: imageID})
         });
-
-        // TODO: Possibly propogate synchronised DB result back to view model?
+        result = await response.json();
+        const { data } = result;
+        resolve(this.artworkDBToArtwork(data));
 
       } catch (e) {
 
-        console.error('Unable to update artwork.');
+        console.error('Unable to update artwork image.');
         throw(e);
 
       }
 
-    }, this.UPDATE_SERVICE_DEBOUNCE_TIME);
-
-  }
-
-  async updateArtworkImage(artwork: Artwork, imageFile: File, imageFilename: string) {
-
-    if (artwork.status === ArtworkStatus.New) {
-      throw new Error('Cannot update artwork image: artwork does not exist');
-    }
-
-    console.log('updating artwork image');
-
-    try {
-
-      if (!AuthenticationService.token) {
-        throw new Error('Unable to update the artwork due to the user not being logged in');
-      }
-
-      const formBody = new FormData();
-      formBody.append('filename', imageFilename);
-      formBody.append('data', imageFile);
-
-      const response = await fetch(`${this.API_ROOT}/files`, {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + AuthenticationService.token
-        },
-        body: formBody
-      });
-      const result = await response.json();
-      const imageID: number = result && result.data && result.data.id;
-
-      console.log(result);
-
-      if (imageID == null) {
-        throw new Error('A problem occurred while uploading the image');
-      }
-
-      await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + AuthenticationService.token
-        },
-        body: JSON.stringify({image: imageID})
-      });
-
-    } catch (e) {
-
-      console.error('Unable to update artwork image.');
-      throw(e);
-
-    }
+    });
 
   }
 

@@ -31,6 +31,7 @@ interface StoryEditorScreenState {
   artworks: Artwork[],
   displayedArtwork?: Artwork;
   currentIndex: number;
+  isProcessing: boolean;
 }
 
 class StoryEditorScreen extends React.Component<
@@ -43,7 +44,8 @@ class StoryEditorScreen extends React.Component<
   state = {
     artworks: [],
     displayedArtwork: undefined,
-    currentIndex: 0
+    currentIndex: 0,
+    isProcessing: false
   }
 
   componentDidMount() {
@@ -104,6 +106,17 @@ class StoryEditorScreen extends React.Component<
     this.updateArtworks(updatedArtwork);
   }
 
+  handleTitleCardImageSelect = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
+    this.setState({isProcessing: true});
+    const artworkWithUpdatedImage: Artwork = await this.artworkService.updateArtworkImage(artwork, imageFile, imageFilename);
+    if (this.state.displayedArtwork) {
+      const updatedArtwork: Artwork = {...artwork};
+      updatedArtwork.image_url = artworkWithUpdatedImage.image_url;
+      this.updateArtworks(updatedArtwork);
+    }
+    this.setState({isProcessing: false});
+  }
+
   handleStorySegmentChange = (updatedStorySegment: StorySegment) => {
     const updatedArtwork: Artwork = Object.assign({}, this.state.displayedArtwork);
     updatedArtwork.story_segments = updatedArtwork.story_segments.map((storySegment: StorySegment) => {
@@ -132,7 +145,7 @@ class StoryEditorScreen extends React.Component<
   }
 
   render() {
-    const { displayedArtwork, currentIndex } = this.state;
+    const { displayedArtwork, currentIndex, isProcessing } = this.state;
     return (
       <StoryEditorContainer>
         {displayedArtwork &&
@@ -140,7 +153,9 @@ class StoryEditorScreen extends React.Component<
             <Phone
               artwork={displayedArtwork}
               storyPrompts={StoryPrompts}
+              isProcessing={isProcessing}
               onTitleCardChange={this.handleTitleCardChange}
+              onTitleCardImageSelect={this.handleTitleCardImageSelect}
               onStorySegmentChange={this.handleStorySegmentChange}
               onCardIndexChange={this.handleCardIndexChange}
             />

@@ -6,8 +6,6 @@ import { Card } from './Card';
 import Button from './Button';
 import SingleLineInput from './SingleLineInput';
 
-import ArtworkService from '../services/ArtworkService';
-
 import {
   Artwork,
   UserUpdatableArtworkMetadata
@@ -33,10 +31,29 @@ const ArtworkImagePicker = styled.div`
 const ImageFilePicker = styled.input`
   display: none;
 `
+const LoadingContainer = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(40, 40, 40, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+`;
+
+const LoadingText = styled.p`
+  color: #FFFFFF;
+  font-family: 'sf_compact_textmedium';
+`;
 
 interface TitleCardProps {
   artwork: Artwork;
+  isProcessing: boolean;
   onChange: (artwork: Artwork) => void;
+  onImageSelect: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
 };
 
 interface TitleCardState {};
@@ -45,8 +62,6 @@ class TitleCard extends React.Component<
   TitleCardProps,
   TitleCardState
 > {
-
-  artworkService: ArtworkService = new ArtworkService();
 
   updateArtworkField = (field: UserUpdatableArtworkMetadata, value: string) => {
     const updatedArtwork: Artwork = {...this.props.artwork};
@@ -59,16 +74,7 @@ class TitleCard extends React.Component<
       try {
         const imageFile: File = e.target.files[0];
         const imageFilename: string = imageFile.name;
-        const reader = new FileReader();
-        reader.readAsDataURL(imageFile);
-        const fileData: string|ArrayBuffer|null = await new Promise((resolve, reject) => { 
-          reader.onload = () => resolve(reader.result)
-          reader.onerror = () => reject();
-        });
-        if (typeof fileData === 'string') {
-          this.updateArtworkField('image_url', fileData);
-          this.artworkService.updateArtworkImage(this.props.artwork, imageFile, imageFilename);
-        }
+        this.props.onImageSelect(this.props.artwork, imageFile, imageFilename);
       } catch (e) {
         console.log('A problem occurred while loading the image file.');
         console.log(e);
@@ -77,7 +83,7 @@ class TitleCard extends React.Component<
   }
 
   render() {
-    const { artwork } = this.props;
+    const { artwork, isProcessing } = this.props;
     const imageFilePickerRef: RefObject<HTMLInputElement> = createRef<HTMLInputElement>();
     return (
       <Card>
@@ -86,6 +92,7 @@ class TitleCard extends React.Component<
             label="Title"
             value={artwork.title}
             placeholder="e.g. Queen’s Park, Brighton"
+            disabled={isProcessing}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('title', e.target.value)
             }}
@@ -95,6 +102,7 @@ class TitleCard extends React.Component<
             value={artwork.year}
             placeholder="e.g. 1835"
             isOptional
+            disabled={isProcessing}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('year', e.target.value)
             }}
@@ -104,6 +112,7 @@ class TitleCard extends React.Component<
             value={artwork.artist_name}
             placeholder="e.g. Thomas Allom"
             isOptional
+            disabled={isProcessing}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('artist_name', e.target.value)
             }}
@@ -113,6 +122,7 @@ class TitleCard extends React.Component<
             value={artwork.artist_nationality}
             placeholder="e.g. Dutch"
             isOptional
+            disabled={isProcessing}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('artist_nationality', e.target.value)
             }}
@@ -129,6 +139,7 @@ class TitleCard extends React.Component<
                 ? 'Add Photo ...'
                 : 'Change Photo ...'
             }
+            disabled={isProcessing}
             onClick={() => imageFilePickerRef.current && imageFilePickerRef.current.click()}
           />
           <ImageFilePicker
@@ -138,6 +149,11 @@ class TitleCard extends React.Component<
             onChange={this.handleImageSelect}
           />
         </ArtworkImagePicker>
+        {isProcessing &&
+          <LoadingContainer>
+            <LoadingText>Processing Image ...</LoadingText>
+          </LoadingContainer>
+        }
       </Card>
     )
   }

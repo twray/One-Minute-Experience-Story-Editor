@@ -97,8 +97,10 @@ const CardNavigationButton = styled.button`
 interface PhoneProps {
   artwork?: Artwork,
   storyPrompts: StoryPrompt[],
+  isProcessing: boolean;
   onCardIndexChange: (newIndex: number) => void;
   onTitleCardChange: (artwork: Artwork) => void;
+  onTitleCardImageSelect: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
   onStorySegmentChange: (storySegment: StorySegment) => void;
 }
 
@@ -139,7 +141,9 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
     const { 
       artwork,
       storyPrompts,
+      isProcessing,
       onTitleCardChange,
+      onTitleCardImageSelect,
       onStorySegmentChange
     } = this.props;
     return (
@@ -159,7 +163,9 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                 <CardContainer>
                   <TitleCard
                     artwork={artwork}
+                    isProcessing={isProcessing}
                     onChange={onTitleCardChange}
+                    onImageSelect={onTitleCardImageSelect}
                   />
                 </CardContainer>
                 {artwork && storyPrompts.map((storyPrompt: StoryPrompt, i: number) => {
