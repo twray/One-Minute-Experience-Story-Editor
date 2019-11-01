@@ -9,6 +9,7 @@ export interface ArtworkBase {
 
 export interface Artwork extends ArtworkBase {
   image_url?: string;
+  image_url_with_aspect_ratio?: string;
   story_segments: StorySegment[];
 }
 

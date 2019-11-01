@@ -21,7 +21,9 @@ class ArtworkService {
     const artworkThumbnail: ArtworkThumbnail|undefined = artworkDB.image && artworkDB.image.data && artworkDB.image.data.thumbnails.find((artworkThumbnail: ArtworkThumbnail) => {
       return artworkThumbnail.dimension === "1024x1024";
     });
+
     const artworkThumbnailImageURL = artworkThumbnail ? artworkThumbnail.url : '';
+    const artworkThumbnailImageURLWithAspectRatio = artworkThumbnail ? (artworkThumbnail.url && artworkThumbnail.url.replace('/crop/', '/contain/')) : '';
 
     return {
       id: artworkDB.id,
@@ -31,6 +33,7 @@ class ArtworkService {
       artist_nationality: artworkDB.artist_nationality,
       year: artworkDB.year,
       image_url: artworkThumbnailImageURL,
+      image_url_with_aspect_ratio: artworkThumbnailImageURLWithAspectRatio,
       story_segments: [
         {id: 1, story_segment: artworkDB.story_segment_1 || ''},
         {id: 2, story_segment: artworkDB.story_segment_2 || ''},
@@ -104,6 +107,7 @@ class ArtworkService {
         });
         const result = await response.json();
         const { data } = result;
+        console.log(result);
         const artworks: Artwork[] = data.map((artworkDB: ArtworkDB): Artwork => this.artworkDBToArtwork(artworkDB));
         resolve(artworks);
 

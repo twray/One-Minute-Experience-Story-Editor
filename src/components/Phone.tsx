@@ -26,6 +26,7 @@ const phoneScreenWidth: number = 375;
 const PhoneContainer = styled.div`
   width: 410px;
   height: 820px;
+  margin: 0 38px;
   background-image: url(${phoneShellImg});
   background-position: center center;
   display: flex;

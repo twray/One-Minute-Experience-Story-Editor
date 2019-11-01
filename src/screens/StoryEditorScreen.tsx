@@ -1,8 +1,9 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
+import Sidebar from '../components/Sidebar';
 import Phone from '../components/Phone';
-import ExampleArea from '../components/ExampleArea';
+import PreviewImage from '../components/PreviewImage';
 
 import AuthenticationService from '../services/AuthenticationService';
 import ArtworkService from '../services/ArtworkService';
@@ -21,7 +22,7 @@ const StoryEditorContainer = styled.div`
   height: 100%;
   overflow: hidden;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 `;
 
@@ -76,7 +77,7 @@ class StoryEditorScreen extends React.Component<
     try {
       const artworks = await this.artworkService.loadAllArtworks();
       this.setState({artworks});
-      this.setState({displayedArtwork: artworks[0]});
+      this.setState({displayedArtwork: artworks[2]});
     } catch (e) {
       console.log('Unable to load artworks');
       throw e;
@@ -107,6 +108,7 @@ class StoryEditorScreen extends React.Component<
     if (this.state.displayedArtwork) {
       const updatedArtwork: Artwork = {...artwork};
       updatedArtwork.image_url = artworkWithUpdatedImage.image_url;
+      updatedArtwork.image_url_with_aspect_ratio = artworkWithUpdatedImage.image_url_with_aspect_ratio;
       this.updateArtworks(updatedArtwork);
     }
     this.setState({isProcessing: false});
@@ -162,30 +164,26 @@ class StoryEditorScreen extends React.Component<
   }
 
   render() {
-    const { displayedArtwork, currentIndex, isProcessing } = this.state;
+    const { displayedArtwork, isProcessing } = this.state;
     return (
-      <React.Fragment>
-        <StoryEditorContainer>
-          {displayedArtwork &&
-            <Fragment>
-              <Phone
-                artwork={displayedArtwork}
-                storyPrompts={StoryPrompts}
-                isProcessing={isProcessing}
-                onTitleCardChange={this.handleTitleCardChange}
-                onNewArtworkWithImage={this.handleNewArtwork}
-                onImageUpdate={this.handleTitleCardImageSelect}
-                onStorySegmentChange={this.handleStorySegmentChange}
-                onCardIndexChange={this.handleCardIndexChange}
-              />
-              <ExampleArea
-                storyPrompts={StoryPrompts}
-                currentIndex={currentIndex}
-              />
-            </Fragment>
-          }
-        </StoryEditorContainer>
-      </React.Fragment>
+      <StoryEditorContainer>
+        <Sidebar />
+        {displayedArtwork &&
+          <React.Fragment>
+            <Phone
+              artwork={displayedArtwork}
+              storyPrompts={StoryPrompts}
+              isProcessing={isProcessing}
+              onTitleCardChange={this.handleTitleCardChange}
+              onNewArtworkWithImage={this.handleNewArtwork}
+              onImageUpdate={this.handleTitleCardImageSelect}
+              onStorySegmentChange={this.handleStorySegmentChange}
+              onCardIndexChange={this.handleCardIndexChange}
+            />
+            <PreviewImage artwork={displayedArtwork} />
+          </React.Fragment>
+        }
+      </StoryEditorContainer>
     );
   }
 }
