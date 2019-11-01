@@ -1,3 +1,7 @@
+export class AuthenticationError extends Error {
+  name: string = 'AuthenticationError';
+}
+
 class AuthenticationService {
 
   // TODO: Implement logout()
@@ -27,7 +31,8 @@ class AuthenticationService {
 
       if (result && result.data && result.data.token) {
         AuthenticationService.token = result.data.token;
-        this.refreshAuthToken();
+        setTimeout(this.refreshAuthToken, this.TOKEN_REFRESH_RATE * 1000);
+        console.log('logged in with token: ' + AuthenticationService.token);
       } else {
         throw new Error('Unable to login due to a token not being provided.');
       }
@@ -45,33 +50,33 @@ class AuthenticationService {
 
   }
 
-  private refreshAuthToken() {
+  async refreshAuthToken(refreshNow: boolean = false) {
 
-    setTimeout(async () => {
+    console.log('refreshing token: ' + AuthenticationService.token);
 
-      console.log('refreshing token: ' + AuthenticationService.token);
+    const response = await fetch(`${this.API_ROOT}/auth/refresh`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token: AuthenticationService.token,
+      })
+    });
 
-      const response = await fetch(`${this.API_ROOT}/auth/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          token: AuthenticationService.token,
-        })
-      });
+    if (response.status === 401) {
+      throw new AuthenticationError('Token no longer valid');
+    }
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (result && result.data && result.data.token) {
-        AuthenticationService.token = result.data.token;
-        this.refreshAuthToken();
-      } else {
-        console.log('Unable to refresh token: will try again in a minute.');
-        setTimeout(this.refreshAuthToken, this.TOKEN_REFRESH_RATE_SECOND_ATTEMPT * 1000)
-      }
+    if (result && result.data && result.data.token) {
+      AuthenticationService.token = result.data.token;
+      setTimeout(this.refreshAuthToken, this.TOKEN_REFRESH_RATE * 1000);
+    } else {
+      console.log('An unknown error occurred while accessing the token');
+    }
 
-    }, this.TOKEN_REFRESH_RATE * 1000)
   }
 
 }

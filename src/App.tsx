@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ErrorInfo } from 'react';
 import styled from 'styled-components';
 
 import StoryEditorScreen from './screens/StoryEditorScreen';
@@ -11,12 +11,16 @@ const AppContainer = styled.div`
   height: 100%;
 `;
 
-const App: React.FC = () => {
-  return (
-    <AppContainer>
-      <StoryEditorScreen />
-    </AppContainer>
-  );
+class App extends React.Component {
+
+  render() {
+    return (
+      <AppContainer>
+        <StoryEditorScreen />
+      </AppContainer>
+    );
+  }
+
 }
 
 export default App;

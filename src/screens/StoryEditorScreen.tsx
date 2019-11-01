@@ -1,4 +1,5 @@
 import React from 'react';
+
 import styled from 'styled-components';
 
 import Sidebar from '../components/Sidebar';
@@ -31,7 +32,6 @@ interface StoryEditorScreenProps {};
 interface StoryEditorScreenState {
   artworks: Artwork[],
   displayedArtwork?: Artwork;
-  currentIndex: number;
   isProcessing: boolean;
 }
 
@@ -40,12 +40,12 @@ class StoryEditorScreen extends React.Component<
     StoryEditorScreenState
   > {
 
+  authenticationService: AuthenticationService = new AuthenticationService();
   artworkService: ArtworkService = new ArtworkService();
 
   state = {
     artworks: [],
     displayedArtwork: undefined,
-    currentIndex: 0,
     isProcessing: false
   }
 
@@ -56,6 +56,24 @@ class StoryEditorScreen extends React.Component<
   init = async () => {
     await this.login();
     await this.loadArtworks();
+
+    // TODO: Create a better scheme to make sure that the user stays,
+    // securely logged in, even if they sleep or close their computer
+    // for a while
+    window.onfocus = async () => {
+      try {
+        await this.authenticationService.refreshAuthToken(true);
+      } catch (e) {
+        if (e.name === 'AuthenticationError') {
+          // TODO: Remove this, and let the HOC ErrorBoundary or
+          // something nicer log out the
+          // user if the token expires.
+          this.login();
+        } else {
+          throw e;
+        }
+      }
+    };
   }
 
   login = async () => {
@@ -77,7 +95,6 @@ class StoryEditorScreen extends React.Component<
     try {
       const artworks = await this.artworkService.loadAllArtworks();
       this.setState({artworks});
-      this.setState({displayedArtwork: artworks[2]});
     } catch (e) {
       console.log('Unable to load artworks');
       throw e;
@@ -85,12 +102,12 @@ class StoryEditorScreen extends React.Component<
 
   }
 
-  handleCardIndexChange = (newIndex: number) => {
-    this.setState({currentIndex: newIndex});
-  }
-
   handleTitleCardChange = (updatedArtwork: Artwork) => {
     this.updateArtworks(updatedArtwork);
+  }
+
+  handleArtworkSelect= (artwork: Artwork) => {
+    this.setState({displayedArtwork: artwork});
   }
 
   handleNewArtwork = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
@@ -108,7 +125,8 @@ class StoryEditorScreen extends React.Component<
     if (this.state.displayedArtwork) {
       const updatedArtwork: Artwork = {...artwork};
       updatedArtwork.image_url = artworkWithUpdatedImage.image_url;
-      updatedArtwork.image_url_with_aspect_ratio = artworkWithUpdatedImage.image_url_with_aspect_ratio;
+      updatedArtwork.image_with_aspect_ratio_url = artworkWithUpdatedImage.image_with_aspect_ratio_url;
+      updatedArtwork.image_thumbnail_url = artworkWithUpdatedImage.image_thumbnail_url;
       this.updateArtworks(updatedArtwork);
     }
     this.setState({isProcessing: false});
@@ -141,7 +159,7 @@ class StoryEditorScreen extends React.Component<
     }
   }
 
-  addNew = () => {
+  addNewArtwork = () => {
 
     const newArtworks: Artwork[] = [...this.state.artworks];
 
@@ -164,10 +182,16 @@ class StoryEditorScreen extends React.Component<
   }
 
   render() {
-    const { displayedArtwork, isProcessing } = this.state;
+    const { artworks, displayedArtwork, isProcessing } = this.state;
     return (
       <StoryEditorContainer>
-        <Sidebar />
+        {artworks &&
+          <Sidebar
+            artworks={artworks}
+            displayedArtwork={displayedArtwork}
+            onArtworkSelect={this.handleArtworkSelect}
+          />
+        }
         {displayedArtwork &&
           <React.Fragment>
             <Phone
@@ -178,7 +202,6 @@ class StoryEditorScreen extends React.Component<
               onNewArtworkWithImage={this.handleNewArtwork}
               onImageUpdate={this.handleTitleCardImageSelect}
               onStorySegmentChange={this.handleStorySegmentChange}
-              onCardIndexChange={this.handleCardIndexChange}
             />
             <PreviewImage artwork={displayedArtwork} />
           </React.Fragment>

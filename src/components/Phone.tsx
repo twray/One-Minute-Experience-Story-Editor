@@ -101,7 +101,6 @@ interface PhoneProps {
   artwork?: Artwork,
   storyPrompts: StoryPrompt[],
   isProcessing: boolean;
-  onCardIndexChange: (newIndex: number) => void;
   onTitleCardChange: (artwork: Artwork) => void;
   onNewArtworkWithImage: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
   onImageUpdate: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
@@ -109,8 +108,8 @@ interface PhoneProps {
 }
 
 interface PhoneState {
-  currentIndex: number;
   xOffset: number;
+  currentIndex: number;
   selectedImageFile? : File
   selectedImageFilename?: string
 }
@@ -118,8 +117,8 @@ interface PhoneState {
 class Phone extends React.Component<PhoneProps, PhoneState> {
 
   state = {
-    currentIndex: 0,
     xOffset: 0,
+    currentIndex: 0,
     selectedImageFile: undefined,
     selectedImageFilename: ''
   }
@@ -129,7 +128,6 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
       currentIndex: index,
       xOffset: phoneScreenWidth * index
     });
-    this.props.onCardIndexChange(index);
   }
 
   handleImageSelect = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
@@ -188,7 +186,6 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
   }
 
   render() {
-    const { xOffset, selectedImageFile } = this.state;
     const { 
       artwork,
       storyPrompts,
@@ -196,6 +193,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
       onTitleCardChange,
       onStorySegmentChange
     } = this.props;
+    const { xOffset, selectedImageFile, currentIndex } = this.state;
     return (
       <PhoneContainer>
         <PhoneScreenContainer>
@@ -243,7 +241,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                     type="button"
                     value="Prev"
                     onClick={this.prevCard}
-                    disabled={this.state.currentIndex === 0}
+                    disabled={currentIndex === 0}
                   >
                     <FontAwesomeIcon icon={faAngleLeft} size="2x" />
                   </CardNavigationButton>
@@ -251,7 +249,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                     type="button"
                     value="Next"
                     onClick={this.nextCard}
-                    disabled={this.state.currentIndex === storyPrompts.length}
+                    disabled={currentIndex === storyPrompts.length}
                     >
                     <FontAwesomeIcon icon={faAngleRight} size="2x" />
                   </CardNavigationButton>
@@ -262,7 +260,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                   <Button
                     text="Continue"
                     buttonStyle="tertiary"
-                    disabled={!(artwork.title && artwork.artist_name && selectedImageFile)}
+                    disabled={!(artwork.title && selectedImageFile)}
                     onClick={this.handleContinueButtonClick}
                   />
                 </CardNavigation>
