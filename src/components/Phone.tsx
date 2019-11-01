@@ -99,7 +99,6 @@ interface PhoneProps {
   storyPrompts: StoryPrompt[],
   onCardIndexChange: (newIndex: number) => void;
   onTitleCardChange: (artwork: Artwork) => void;
-  onTitleCardImageSelect: (artwork: Artwork, imageDataBase64: string, imageFilename: string) => void;
   onStorySegmentChange: (storySegment: StorySegment) => void;
 }
 
@@ -141,7 +140,6 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
       artwork,
       storyPrompts,
       onTitleCardChange,
-      onTitleCardImageSelect,
       onStorySegmentChange
     } = this.props;
     return (
@@ -162,7 +160,6 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                   <TitleCard
                     artwork={artwork}
                     onChange={onTitleCardChange}
-                    onImageSelect={onTitleCardImageSelect}
                   />
                 </CardContainer>
                 {artwork && storyPrompts.map((storyPrompt: StoryPrompt, i: number) => {

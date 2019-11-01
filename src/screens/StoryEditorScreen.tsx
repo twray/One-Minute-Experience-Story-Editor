@@ -116,10 +116,6 @@ class StoryEditorScreen extends React.Component<
     this.updateArtworks(updatedArtwork);
   }
 
-  handleTitleCardImageSelect = (artwork: Artwork, imageDataBase64: string, imageFilename: string) => {
-    this.artworkService.updateArtworkImage(artwork, imageDataBase64, imageFilename);
-  }
-
   updateArtworks = async (updatedArtwork: Artwork) => {
     const updatedArtworks: Artwork[] = this.state.artworks.map((artworkInList: Artwork) => {
       if (artworkInList.id === updatedArtwork.id) {
@@ -146,7 +142,6 @@ class StoryEditorScreen extends React.Component<
               storyPrompts={StoryPrompts}
               onTitleCardChange={this.handleTitleCardChange}
               onStorySegmentChange={this.handleStorySegmentChange}
-              onTitleCardImageSelect={this.handleTitleCardImageSelect}
               onCardIndexChange={this.handleCardIndexChange}
             />
             <ExampleArea

@@ -2,7 +2,8 @@ class AuthenticationService {
 
   // TODO: Implement logout()
 
-  TOKEN_REFRESH_RATE: number = 3000;
+  TOKEN_REFRESH_RATE: number = 240;
+  TOKEN_REFRESH_RATE_SECOND_ATTEMPT = 60;
   API_ROOT: string = process.env.REACT_APP_SERVER_API_ROOT || '';
 
   static token: string|null = null;
@@ -66,7 +67,8 @@ class AuthenticationService {
         AuthenticationService.token = result.data.token;
         this.refreshAuthToken();
       } else {
-        throw new Error('Unable to refresh token.');
+        console.log('Unable to refresh token: will try again in a minute.');
+        setTimeout(this.refreshAuthToken, this.TOKEN_REFRESH_RATE_SECOND_ATTEMPT * 1000)
       }
 
     }, this.TOKEN_REFRESH_RATE * 1000)

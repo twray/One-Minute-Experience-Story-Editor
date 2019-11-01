@@ -123,11 +123,13 @@ class ArtworkService {
 
   }
 
-  async updateArtworkImage(artwork: Artwork, imageDataBase64: string, imageFilename: string) {
+  async updateArtworkImage(artwork: Artwork, imageFile: File, imageFilename: string) {
 
     if (artwork.status === ArtworkStatus.New) {
       throw new Error('Cannot update artwork image: artwork does not exist');
     }
+
+    console.log('updating artwork image');
 
     try {
 
@@ -135,16 +137,16 @@ class ArtworkService {
         throw new Error('Unable to update the artwork due to the user not being logged in');
       }
 
+      const formBody = new FormData();
+      formBody.append('filename', imageFilename);
+      formBody.append('data', imageFile);
+
       const response = await fetch(`${this.API_ROOT}/files`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + AuthenticationService.token
         },
-        body: JSON.stringify({
-          filename: imageFilename,
-          data: imageDataBase64
-        })
+        body: formBody
       });
       const result = await response.json();
       const imageID: number = result && result.data && result.data.id;
