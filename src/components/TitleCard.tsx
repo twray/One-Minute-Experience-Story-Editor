@@ -98,6 +98,15 @@ class TitleCard extends React.Component<
             }}
           />
           <SingleLineInput
+            label="Artist"
+            value={artwork.artist_name}
+            placeholder="e.g. Thomas Allom"
+            disabled={isProcessing}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => { 
+              this.updateArtworkField('artist_name', e.target.value)
+            }}
+          />
+          <SingleLineInput
             label="Year"
             value={artwork.year}
             placeholder="e.g. 1835"
@@ -105,16 +114,6 @@ class TitleCard extends React.Component<
             disabled={isProcessing}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('year', e.target.value)
-            }}
-          />
-          <SingleLineInput
-            label="Artist"
-            value={artwork.artist_name}
-            placeholder="e.g. Thomas Allom"
-            isOptional
-            disabled={isProcessing}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => { 
-              this.updateArtworkField('artist_name', e.target.value)
             }}
           />
           <SingleLineInput

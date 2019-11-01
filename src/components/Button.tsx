@@ -18,6 +18,10 @@ const ButtonContainer = styled.button`
   text-transform: uppercase;
   cursor: pointer;
   outline: none;
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
   &.primary {
     background-color: #9A7049;
   }
@@ -55,7 +59,7 @@ interface ButtonProps {
   text: string;
   buttonStyle?: ButtonStyle,
   buttonSize?: ButtonSize,
-  disabled: boolean;
+  disabled?: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void
 }
 

@@ -76,25 +76,11 @@ class StoryEditorScreen extends React.Component<
     try {
       const artworks = await this.artworkService.loadAllArtworks();
       this.setState({artworks});
+      this.setState({displayedArtwork: artworks[0]});
     } catch (e) {
       console.log('Unable to load artworks');
       throw e;
     }
-
-    // TEST: Display Artwork from DB
-    this.setState({displayedArtwork: this.state.artworks[2]});
-
-    // TEST: Display Empty Artwork
-    /*
-    this.setState({displayedArtwork: {
-      status: ArtworkStatus.New,
-      title: '',
-      year: '',
-      artist_name: '',
-      artist_nationality: '',
-      story_segments: []
-    }});
-    */
 
   }
 
@@ -104,6 +90,15 @@ class StoryEditorScreen extends React.Component<
 
   handleTitleCardChange = (updatedArtwork: Artwork) => {
     this.updateArtworks(updatedArtwork);
+  }
+
+  handleNewArtwork = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
+    this.setState({isProcessing: true});
+    const newArtworkWithImage = await this.artworkService.createArtwork(artwork, imageFile, imageFilename);
+    this.setState({
+      displayedArtwork: newArtworkWithImage,
+      isProcessing: false
+    });
   }
 
   handleTitleCardImageSelect = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
@@ -144,28 +139,53 @@ class StoryEditorScreen extends React.Component<
     }
   }
 
+  addNew = () => {
+
+    const newArtworks: Artwork[] = [...this.state.artworks];
+
+    const newArtwork: Artwork = {
+      status: ArtworkStatus.New,
+      title: '',
+      year: '',
+      artist_name: '',
+      artist_nationality: '',
+      story_segments: []
+    };
+
+    newArtworks.push(newArtwork);
+
+    this.setState({
+      artworks: newArtworks,
+      displayedArtwork: newArtwork
+    });
+
+  }
+
   render() {
     const { displayedArtwork, currentIndex, isProcessing } = this.state;
     return (
-      <StoryEditorContainer>
-        {displayedArtwork &&
-          <Fragment>
-            <Phone
-              artwork={displayedArtwork}
-              storyPrompts={StoryPrompts}
-              isProcessing={isProcessing}
-              onTitleCardChange={this.handleTitleCardChange}
-              onTitleCardImageSelect={this.handleTitleCardImageSelect}
-              onStorySegmentChange={this.handleStorySegmentChange}
-              onCardIndexChange={this.handleCardIndexChange}
-            />
-            <ExampleArea
-              storyPrompts={StoryPrompts}
-              currentIndex={currentIndex}
-            />
-          </Fragment>
-        }
-      </StoryEditorContainer>
+      <React.Fragment>
+        <StoryEditorContainer>
+          {displayedArtwork &&
+            <Fragment>
+              <Phone
+                artwork={displayedArtwork}
+                storyPrompts={StoryPrompts}
+                isProcessing={isProcessing}
+                onTitleCardChange={this.handleTitleCardChange}
+                onNewArtworkWithImage={this.handleNewArtwork}
+                onImageUpdate={this.handleTitleCardImageSelect}
+                onStorySegmentChange={this.handleStorySegmentChange}
+                onCardIndexChange={this.handleCardIndexChange}
+              />
+              <ExampleArea
+                storyPrompts={StoryPrompts}
+                currentIndex={currentIndex}
+              />
+            </Fragment>
+          }
+        </StoryEditorContainer>
+      </React.Fragment>
     );
   }
 }

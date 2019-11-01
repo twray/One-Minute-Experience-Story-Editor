@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 
+import Button from '../components/Button';
 import { CardContainer } from '../components/Card';
 import TitleCard from '../components/TitleCard';
 import GeneralStorySegmentCard from '../components/GeneralStorySegmentCard';
@@ -12,6 +13,7 @@ import phoneShellImg from '../assets/images/phone-shell.svg';
 
 import {
   Artwork,
+  ArtworkStatus,
   StorySegment,
   StoryPrompt
 } from '../model/Artwork';
@@ -100,20 +102,25 @@ interface PhoneProps {
   isProcessing: boolean;
   onCardIndexChange: (newIndex: number) => void;
   onTitleCardChange: (artwork: Artwork) => void;
-  onTitleCardImageSelect: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
+  onNewArtworkWithImage: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
+  onImageUpdate: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
   onStorySegmentChange: (storySegment: StorySegment) => void;
 }
 
 interface PhoneState {
   currentIndex: number;
   xOffset: number;
+  selectedImageFile? : File
+  selectedImageFilename?: string
 }
 
 class Phone extends React.Component<PhoneProps, PhoneState> {
 
   state = {
     currentIndex: 0,
-    xOffset: 0
+    xOffset: 0,
+    selectedImageFile: undefined,
+    selectedImageFilename: ''
   }
 
   setIndex = (index: number) => {
@@ -122,6 +129,49 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
       xOffset: phoneScreenWidth * index
     });
     this.props.onCardIndexChange(index);
+  }
+
+  handleImageSelect = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
+
+    this.setState({
+      selectedImageFile: imageFile,
+      selectedImageFilename: imageFilename
+    });
+
+    if (this.props.artwork && this.props.artwork.status !== ArtworkStatus.New) {
+      this.props.onImageUpdate(artwork, imageFile, imageFilename);
+    } else if (this.props.artwork && this.props.artwork.status === ArtworkStatus.New) {
+
+      const reader = new FileReader();
+      reader.readAsDataURL(imageFile);
+      const fileData: string|ArrayBuffer|null = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = () => reject();
+      });
+
+      if (typeof fileData === 'string') {
+
+        const updatedArtwork: Artwork = {...this.props.artwork};
+        updatedArtwork.image_url = fileData;
+        this.props.onTitleCardChange(updatedArtwork);
+
+      }
+    }
+  }
+
+  handleContinueButtonClick = () => {
+    if (this.props.artwork && this.props.artwork.status === ArtworkStatus.New) {
+      const artwork: Artwork|undefined = this.props.artwork;
+      const imageFile: File|undefined = this.state.selectedImageFile;
+      const imageFilename: string|undefined = this.state.selectedImageFilename;
+      if (artwork && imageFile && imageFilename) {
+        this.props.onNewArtworkWithImage(
+          artwork,
+          imageFile,
+          imageFilename
+        );
+      }
+    }
   }
 
   nextCard = () => {
@@ -137,13 +187,12 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
   }
 
   render() {
-    const { xOffset } = this.state;
+    const { xOffset, selectedImageFile } = this.state;
     const { 
       artwork,
       storyPrompts,
       isProcessing,
       onTitleCardChange,
-      onTitleCardImageSelect,
       onStorySegmentChange
     } = this.props;
     return (
@@ -165,10 +214,10 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                     artwork={artwork}
                     isProcessing={isProcessing}
                     onChange={onTitleCardChange}
-                    onImageSelect={onTitleCardImageSelect}
+                    onImageSelect={this.handleImageSelect}
                   />
                 </CardContainer>
-                {artwork && storyPrompts.map((storyPrompt: StoryPrompt, i: number) => {
+                {artwork && artwork.status !== ArtworkStatus.New && storyPrompts.map((storyPrompt: StoryPrompt, i: number) => {
 
                     const storySegment: StorySegment = artwork.story_segments.find((storySegment: StorySegment) => {
                       return storySegment.id === i + 1;
@@ -187,24 +236,36 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                   })
                 }
               </CardCarousel>
-              <CardNavigation>
-                <CardNavigationButton
-                  type="button"
-                  value="Prev"
-                  onClick={this.prevCard}
-                  disabled={this.state.currentIndex === 0}
-                >
-                  <FontAwesomeIcon icon={faAngleLeft} size="2x" />
-                </CardNavigationButton>
-                <CardNavigationButton
-                  type="button"
-                  value="Next"
-                  onClick={this.nextCard}
-                  disabled={this.state.currentIndex === storyPrompts.length}
+              {artwork && artwork.status !== ArtworkStatus.New &&
+                <CardNavigation>
+                  <CardNavigationButton
+                    type="button"
+                    value="Prev"
+                    onClick={this.prevCard}
+                    disabled={this.state.currentIndex === 0}
                   >
-                  <FontAwesomeIcon icon={faAngleRight} size="2x" />
-                </CardNavigationButton>
-              </CardNavigation>
+                    <FontAwesomeIcon icon={faAngleLeft} size="2x" />
+                  </CardNavigationButton>
+                  <CardNavigationButton
+                    type="button"
+                    value="Next"
+                    onClick={this.nextCard}
+                    disabled={this.state.currentIndex === storyPrompts.length}
+                    >
+                    <FontAwesomeIcon icon={faAngleRight} size="2x" />
+                  </CardNavigationButton>
+                </CardNavigation>
+              }
+              {artwork && artwork.status === ArtworkStatus.New &&
+                <CardNavigation>
+                  <Button
+                    text="Continue"
+                    buttonStyle="tertiary"
+                    disabled={!(artwork.title && artwork.artist_name && selectedImageFile)}
+                    onClick={this.handleContinueButtonClick}
+                  />
+                </CardNavigation>
+              }
             </Fragment>
           }
         </PhoneScreenContainer>
