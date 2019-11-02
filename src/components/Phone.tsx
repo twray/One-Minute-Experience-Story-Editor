@@ -126,8 +126,9 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
   }
 
   componentDidUpdate(prevProps: PhoneProps) {
-    if (this.props.selectedIndex &&
-        this.props.selectedIndex !== prevProps.selectedIndex
+    if (this.props.selectedIndex != null &&
+        this.props.selectedIndex !== prevProps.selectedIndex &&
+        this.props.selectedIndex !== this.state.currentIndex
       ) {
       this.setIndex(this.props.selectedIndex);
     }
@@ -141,32 +142,24 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
   }
 
   handleImageSelect = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
-
     this.setState({
       selectedImageFile: imageFile,
       selectedImageFilename: imageFilename
     });
-
     if (this.props.artwork && this.props.artwork.status !== ArtworkStatus.New) {
-
       this.props.onImageUpdate(artwork, imageFile, imageFilename);
-
     } else if (this.props.artwork && this.props.artwork.status === ArtworkStatus.New) {
-
       const reader = new FileReader();
       reader.readAsDataURL(imageFile);
       const fileData: string|ArrayBuffer|null = await new Promise((resolve, reject) => {
         reader.onload = () => resolve(reader.result)
         reader.onerror = () => reject();
       });
-
       if (typeof fileData === 'string') {
-
         const updatedArtwork: Artwork = {...this.props.artwork};
         updatedArtwork.image_url = fileData;
         updatedArtwork.image_thumbnail_url = fileData;
         this.props.onTitleCardChange(updatedArtwork);
-
       }
     }
   }

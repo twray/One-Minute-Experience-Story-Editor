@@ -56,10 +56,8 @@ class StoryEditorScreen extends React.Component<
   }
 
   init = async () => {
-
     await this.login();
     await this.loadArtworks();
-
     // TODO: Create a better scheme to make sure that the user stays,
     // securely logged in, even if they sleep or close their computer
     // for a while
@@ -128,7 +126,8 @@ class StoryEditorScreen extends React.Component<
     newArtworks.unshift(newArtwork);
     this.setState({
       artworks: newArtworks,
-      displayedArtwork: newArtwork
+      displayedArtwork: newArtwork,
+      selectedCardIndex: 0
     });
   }
 
