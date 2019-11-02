@@ -32,6 +32,7 @@ interface StoryEditorScreenProps {};
 interface StoryEditorScreenState {
   artworks: Artwork[],
   displayedArtwork?: Artwork;
+  selectedCardIndex: number;
   isProcessing: boolean;
 }
 
@@ -46,6 +47,7 @@ class StoryEditorScreen extends React.Component<
   state = {
     artworks: [],
     displayedArtwork: undefined,
+    selectedCardIndex: 0,
     isProcessing: false
   }
 
@@ -105,8 +107,29 @@ class StoryEditorScreen extends React.Component<
     this.updateArtworks(updatedArtwork);
   }
 
-  handleArtworkSelect= (artwork: Artwork) => {
+  handleArtworkSelect = (artwork: Artwork) => {
     this.setState({displayedArtwork: artwork});
+  }
+
+  handleCardIndexChange = (index: number) => {
+    this.setState({selectedCardIndex: index});
+  }
+
+  addNewBlankArtwork = () => {
+    const newArtworks: Artwork[] = [...this.state.artworks];
+    const newArtwork: Artwork = {
+      status: ArtworkStatus.New,
+      title: '',
+      year: '',
+      artist_name: '',
+      artist_nationality: '',
+      story_segments: []
+    };
+    newArtworks.unshift(newArtwork);
+    this.setState({
+      artworks: newArtworks,
+      displayedArtwork: newArtwork
+    });
   }
 
   handleNewArtwork = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
@@ -116,6 +139,7 @@ class StoryEditorScreen extends React.Component<
     this.setState({
       artworks: artworks,
       displayedArtwork: newArtworkWithImage,
+      selectedCardIndex: 1,
       isProcessing: false
     });
   }
@@ -123,7 +147,6 @@ class StoryEditorScreen extends React.Component<
   handleTitleCardImageSelect = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
     this.setState({isProcessing: true});
     const artworkWithUpdatedImage: Artwork = await this.artworkService.updateArtworkImage(artwork, imageFile, imageFilename);
-    console.log('handleArtworkSelect method called');
     if (this.state.displayedArtwork) {
       const updatedArtwork: Artwork = {...artwork};
       updatedArtwork.image_url = artworkWithUpdatedImage.image_url;
@@ -154,9 +177,6 @@ class StoryEditorScreen extends React.Component<
         return artworkInList;
       }
     });
-    console.log('updating artwork called');
-    console.log(updatedArtwork);
-    console.log(updatedArtworks);
     this.setState({artworks: updatedArtworks});
     this.setState({displayedArtwork: updatedArtwork});
     if (updatedArtwork.status !== ArtworkStatus.New) {
@@ -164,25 +184,13 @@ class StoryEditorScreen extends React.Component<
     }
   }
 
-  addNewBlankArtwork = () => {
-    const newArtworks: Artwork[] = [...this.state.artworks];
-    const newArtwork: Artwork = {
-      status: ArtworkStatus.New,
-      title: '',
-      year: '',
-      artist_name: '',
-      artist_nationality: '',
-      story_segments: []
-    };
-    newArtworks.unshift(newArtwork);
-    this.setState({
-      artworks: newArtworks,
-      displayedArtwork: newArtwork
-    });
-  }
-
   render() {
-    const { artworks, displayedArtwork, isProcessing } = this.state;
+    const {
+      artworks,
+      displayedArtwork,
+      isProcessing,
+      selectedCardIndex
+    } = this.state;
     return (
       <StoryEditorContainer>
         {artworks &&
@@ -199,6 +207,8 @@ class StoryEditorScreen extends React.Component<
               artwork={displayedArtwork}
               storyPrompts={StoryPrompts}
               isProcessing={isProcessing}
+              selectedIndex={selectedCardIndex}
+              onIndexChange={this.handleCardIndexChange}
               onTitleCardChange={this.handleTitleCardChange}
               onNewArtworkWithImage={this.handleNewArtwork}
               onImageUpdate={this.handleTitleCardImageSelect}

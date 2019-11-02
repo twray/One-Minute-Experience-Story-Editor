@@ -101,6 +101,8 @@ interface PhoneProps {
   artwork?: Artwork,
   storyPrompts: StoryPrompt[],
   isProcessing: boolean;
+  selectedIndex?: number;
+  onIndexChange?: (index: number) => void;
   onTitleCardChange: (artwork: Artwork) => void;
   onNewArtworkWithImage: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
   onImageUpdate: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
@@ -123,6 +125,14 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
     selectedImageFilename: ''
   }
 
+  componentDidUpdate(prevProps: PhoneProps) {
+    if (this.props.selectedIndex &&
+        this.props.selectedIndex !== prevProps.selectedIndex
+      ) {
+      this.setIndex(this.props.selectedIndex);
+    }
+  }
+
   setIndex = (index: number) => {
     this.setState({
       currentIndex: index,
@@ -140,7 +150,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
     if (this.props.artwork && this.props.artwork.status !== ArtworkStatus.New) {
 
       this.props.onImageUpdate(artwork, imageFile, imageFilename);
-      
+
     } else if (this.props.artwork && this.props.artwork.status === ArtworkStatus.New) {
 
       const reader = new FileReader();
@@ -182,13 +192,17 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
 
   nextCard = () => {
     if (this.state.currentIndex < (this.props.storyPrompts.length)) {
-      this.setIndex(this.state.currentIndex + 1);
+      const newIndex = this.state.currentIndex + 1
+      this.setIndex(newIndex);
+      this.props.onIndexChange && this.props.onIndexChange(newIndex);
     }
   }
 
   prevCard = () => {
     if (this.state.currentIndex > 0) {
-      this.setIndex(this.state.currentIndex - 1);
+      const newIndex = this.state.currentIndex - 1
+      this.setIndex(newIndex);
+      this.props.onIndexChange && this.props.onIndexChange(newIndex);
     }
   }
 
