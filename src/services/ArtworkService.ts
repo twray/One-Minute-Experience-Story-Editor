@@ -5,7 +5,19 @@ import {
   ArtworkStatus
 } from '../model/Artwork';
 
-import AuthenticationService from './AuthenticationService';
+import AuthenticationService, { AuthenticationError } from './AuthenticationService';
+
+export class APIError extends Error {
+
+  name: string = 'APIError';
+  httpStatus?: number;
+
+  constructor(httpStatus?: number) {
+    super();
+    this.httpStatus = httpStatus;
+  }
+
+}
 
 class ArtworkService {
 
@@ -15,6 +27,17 @@ class ArtworkService {
   UPDATE_SERVICE_DEBOUNCE_TIME: number = 1000;
 
   throttler: number|undefined;
+
+  private validateResponse(response: Response) {
+
+    if (response.status === 401 || response.status === 403) {
+      throw new AuthenticationError(response.status);
+    } else if (response.status !== 200) {
+      throw new APIError(response.status);
+    }
+
+    return response;
+  }
 
   private artworkDBToArtwork(artworkDB: ArtworkDB): Artwork {
 
@@ -62,26 +85,21 @@ class ArtworkService {
 
       try {
 
-        if (!AuthenticationService.token) {
-          throw new Error('Unable to update the artwork due to the user not being logged in');
-        }
-
         console.log('uploading image');
 
         const formBody = new FormData();
         formBody.append('filename', imageFilename);
         formBody.append('data', imageFile);
-
-        let response, result;
-
-        response = await fetch(`${this.API_ROOT}/files`, {
+;
+        const response = this.validateResponse(await fetch(`${this.API_ROOT}/files`, {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + AuthenticationService.token
           },
           body: formBody
-        });
-        result = await response.json();
+        }));
+
+        const result = await response.json();
         const imageID: number = result && result.data && result.data.id;
 
         if (imageID == null) {
@@ -107,15 +125,14 @@ class ArtworkService {
 
       try {
 
-        if (!AuthenticationService.token) {
-          throw new Error('Unable to load artworks due to the user not being logged in');
-        }
-
-        const response = await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on`, {
+        const response = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on`, {
           headers: {
             'Authorization': 'Bearer ' + AuthenticationService.token
           }
-        });
+        }));
+        if (response.status === 401) {
+          throw new AuthenticationError(response.status);
+        }
         const result = await response.json();
         const { data } = result;
         const artworks: Artwork[] = data.map((artworkDB: ArtworkDB): Artwork => this.artworkDBToArtwork(artworkDB));
@@ -144,10 +161,6 @@ class ArtworkService {
 
       try {
 
-        if (!AuthenticationService.token) {
-          throw new Error('Unable to update the artwork due to the user not being logged in');
-        }
-
         const imageID = await this.uploadImage(imageFile, imageFilename);
 
         if (imageID) {
@@ -165,14 +178,17 @@ class ArtworkService {
             story_segment_5: ''
           };
 
-          const response = await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*`, {
+          const response = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer ' + AuthenticationService.token
             },
             body: JSON.stringify({...artworkDB, image: imageID})
-          });
+          }));
+          if (response.status === 401) {
+            throw new AuthenticationError(response.status);
+          }
           const result = await response.json();
           const { data } = result;
           resolve(this.artworkDBToArtwork(data));
@@ -209,10 +225,6 @@ class ArtworkService {
 
         try {
 
-          if (!AuthenticationService.token) {
-            throw new Error('Unable to update the artwork due to the user not being logged in');
-          }
-
           const artworkDB: ArtworkDB = {
             status: artwork.status,
             title: artwork.title,
@@ -226,14 +238,17 @@ class ArtworkService {
             story_segment_5: artwork.story_segments[4].story_segment
           };
 
-          const response = await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}?fields=*,image.*`, {
+          const response = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}?fields=*,image.*`, {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer ' + AuthenticationService.token
             },
             body: JSON.stringify(artworkDB)
-          });
+          }));
+          if (response.status === 401) {
+            throw new AuthenticationError(response.status);
+          }
           const result = await response.json();
           const { data } = result;
           resolve(this.artworkDBToArtwork(data));
@@ -263,20 +278,19 @@ class ArtworkService {
 
       try {
 
-        if (!AuthenticationService.token) {
-          throw new Error('Unable to update the artwork due to the user not being logged in');
-        }
-
         const imageID: number = await this.uploadImage(imageFile, imageFilename);
 
-        const response = await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}?fields=*,image.*`, {
+        const response = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}?fields=*,image.*`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + AuthenticationService.token
           },
           body: JSON.stringify({image: imageID})
-        });
+        }));
+        if (response.status === 401) {
+          throw new AuthenticationError(response.status);
+        }
         const result = await response.json();
         const { data } = result;
         resolve(this.artworkDBToArtwork(data));

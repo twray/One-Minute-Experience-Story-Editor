@@ -2,6 +2,7 @@ import React from 'react';
 
 import styled from 'styled-components';
 
+import StatusBar from '../components/StatusBar';
 import Sidebar from '../components/Sidebar';
 import Phone from '../components/Phone';
 import PreviewImage from '../components/PreviewImage';
@@ -28,7 +29,7 @@ const StoryEditorContainer = styled.div`
 `;
 
 interface StoryEditorScreenProps {
-  onLoggedOut: () => void;
+  onLoggedOut: (loggedoutDueToAuthFailure?: boolean) => void;
 };
 
 interface StoryEditorScreenState {
@@ -36,6 +37,8 @@ interface StoryEditorScreenState {
   displayedArtwork?: Artwork;
   selectedCardIndex: number;
   isProcessing: boolean;
+  statusBarMessage?: string;
+  statusBarError?: string;
 }
 
 class StoryEditorScreen extends React.Component<
@@ -50,55 +53,16 @@ class StoryEditorScreen extends React.Component<
     artworks: [],
     displayedArtwork: undefined,
     selectedCardIndex: 0,
-    isProcessing: false
+    isProcessing: false,
+    statusBarMessage: undefined,
+    statusBarError: undefined
   }
 
   componentDidMount() {
     this.init();
   }
 
-  init = async () => {
-    await this.login();
-    await this.loadArtworks();
-    // TODO: Create a better scheme to make sure that the user stays,
-    // securely logged in, even if they sleep or close their computer
-    // for a while
-    window.onfocus = async () => {
-      try {
-        AuthenticationService.refreshAuthToken();
-      } catch (e) {
-        if (e.name === 'AuthenticationError') {
-          this.props.onLoggedOut();
-        } else {
-          console.log(e);
-        }
-      }
-    };
-  }
-
-  login = async () => {
-    // TEST: Login
-    const authenticationService = new AuthenticationService();
-    try {
-      await authenticationService.login(
-        process.env.REACT_APP_MOCK_USERNAME || '',
-        process.env.REACT_APP_MOCK_PASSWORD || ''
-      );
-    } catch (e) {
-      console.log('Unable to login');
-      console.log(e);
-    }
-  }
-
-  loadArtworks = async () => {
-    try {
-      const artworks = await this.artworkService.loadAllArtworks();
-      this.setState({artworks});
-    } catch (e) {
-      console.log('Unable to load artworks');
-      throw e;
-    }
-  }
+  init = async () => await this.loadArtworks();
 
   handleTitleCardChange = (updatedArtwork: Artwork) => {
     this.updateArtworks(updatedArtwork);
@@ -112,47 +76,79 @@ class StoryEditorScreen extends React.Component<
     this.setState({selectedCardIndex: index});
   }
 
+  handleServiceErrorGracefully = (e: Error, message?: string) => {
+    if (e.name === "AuthenticationError") {
+      this.props.onLoggedOut(true);
+    } else {
+      message && this.setState({statusBarError: message});
+      console.log(e);
+    }
+  }
+
   addNewBlankArtwork = () => {
-    const newArtworks: Artwork[] = [...this.state.artworks];
-    const newArtwork: Artwork = {
-      status: ArtworkStatus.New,
-      title: '',
-      year: '',
-      artist_name: '',
-      artist_nationality: '',
-      story_segments: []
-    };
-    newArtworks.unshift(newArtwork);
-    this.setState({
-      artworks: newArtworks,
-      displayedArtwork: newArtwork,
-      selectedCardIndex: 0
-    });
+    if (!this.state.artworks.find((artwork: Artwork) => artwork.status === ArtworkStatus.New)) {
+      const newArtworks: Artwork[] = [...this.state.artworks];
+      const newArtwork: Artwork = {
+        status: ArtworkStatus.New,
+        title: '',
+        year: '',
+        artist_name: '',
+        artist_nationality: '',
+        story_segments: []
+      };
+      newArtworks.unshift(newArtwork);
+      this.setState({
+        artworks: newArtworks,
+        displayedArtwork: newArtwork,
+        selectedCardIndex: 0
+      });
+    }
+  }
+
+  loadArtworks = async () => {
+    try {
+      const artworks = await this.artworkService.loadAllArtworks();
+      this.setState({artworks});
+    } catch (e) {
+      this.handleServiceErrorGracefully(e, 'A problem occurred while loading the stories. Please refresh the page and try again.');
+    }
   }
 
   handleNewArtwork = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
     this.setState({isProcessing: true});
-    const newArtworkWithImage = await this.artworkService.createArtwork(artwork, imageFile, imageFilename);
-    const artworks = await this.artworkService.loadAllArtworks();
-    this.setState({
-      artworks: artworks,
-      displayedArtwork: newArtworkWithImage,
-      selectedCardIndex: 1,
-      isProcessing: false
-    });
+    try {
+      const newArtworkWithImage = await this.artworkService.createArtwork(artwork, imageFile, imageFilename);
+      const artworks = await this.artworkService.loadAllArtworks();
+      this.setState({
+        artworks: artworks,
+        displayedArtwork: newArtworkWithImage,
+        selectedCardIndex: 1,
+      });
+    } catch (e) {
+      this.handleServiceErrorGracefully(e, 'A problem occurred while uploading the image. Please refresh the page and try again.');
+    } finally {
+      this.setState({
+        isProcessing: false
+      });
+    }
   }
 
   handleTitleCardImageSelect = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
     this.setState({isProcessing: true});
-    const artworkWithUpdatedImage: Artwork = await this.artworkService.updateArtworkImage(artwork, imageFile, imageFilename);
-    if (this.state.displayedArtwork) {
-      const updatedArtwork: Artwork = {...artwork};
-      updatedArtwork.image_url = artworkWithUpdatedImage.image_url;
-      updatedArtwork.image_with_aspect_ratio_url = artworkWithUpdatedImage.image_with_aspect_ratio_url;
-      updatedArtwork.image_thumbnail_url = artworkWithUpdatedImage.image_thumbnail_url;
-      this.updateArtworks(updatedArtwork);
+    try {
+      const artworkWithUpdatedImage: Artwork = await this.artworkService.updateArtworkImage(artwork, imageFile, imageFilename);
+      if (this.state.displayedArtwork) {
+        const updatedArtwork: Artwork = {...artwork};
+        updatedArtwork.image_url = artworkWithUpdatedImage.image_url;
+        updatedArtwork.image_with_aspect_ratio_url = artworkWithUpdatedImage.image_with_aspect_ratio_url;
+        updatedArtwork.image_thumbnail_url = artworkWithUpdatedImage.image_thumbnail_url;
+        this.updateArtworks(updatedArtwork);
+      }
+    } catch (e) {
+      this.handleServiceErrorGracefully(e, 'A problem occurred while uploading the image. Please refresh the page and try again.');
+    } finally {
+      this.setState({isProcessing: false});
     }
-    this.setState({isProcessing: false});
   }
 
   handleStorySegmentChange = (updatedStorySegment: StorySegment) => {
@@ -168,29 +164,44 @@ class StoryEditorScreen extends React.Component<
   }
 
   updateArtworks = async (updatedArtwork: Artwork) => {
-    const updatedArtworks: Artwork[] = this.state.artworks.map((artworkInList: Artwork) => {
-      if (artworkInList.id === updatedArtwork.id) {
-        return updatedArtwork;
-      } else {
-        return artworkInList;
+    try {
+      const updatedArtworks: Artwork[] = this.state.artworks.map((artworkInList: Artwork) => {
+        if (artworkInList.id === updatedArtwork.id) {
+          return updatedArtwork;
+        } else {
+          return artworkInList;
+        }
+      });
+      this.setState({artworks: updatedArtworks});
+      this.setState({displayedArtwork: updatedArtwork});
+      if (updatedArtwork.status !== ArtworkStatus.New) {
+        await this.artworkService.updateArtwork(updatedArtwork);
+        this.setState({statusBarMessage: 'Changes saved automatically.'});
       }
-    });
-    this.setState({artworks: updatedArtworks});
-    this.setState({displayedArtwork: updatedArtwork});
-    if (updatedArtwork.status !== ArtworkStatus.New) {
-      this.artworkService.updateArtwork(updatedArtwork);
+    } catch (e) {
+      this.handleServiceErrorGracefully(e, 'We are unable to save your changes. Please refresh the page and try again.');
     }
   }
 
   render() {
+
     const {
       artworks,
       displayedArtwork,
+      selectedCardIndex,
       isProcessing,
-      selectedCardIndex
+      statusBarMessage,
+      statusBarError
     } = this.state;
+    const { onLoggedOut } = this.props;
+
     return (
       <StoryEditorContainer>
+        <StatusBar
+          message={statusBarMessage}
+          error={statusBarError}
+          onLogoutButtonClick={() => onLoggedOut()}
+        />
         {artworks &&
           <Sidebar
             artworks={artworks}
@@ -217,6 +228,7 @@ class StoryEditorScreen extends React.Component<
         }
       </StoryEditorContainer>
     );
+
   }
 }
 

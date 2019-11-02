@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import StoryEditorScreen from './screens/StoryEditorScreen';
 import LoginScreen from './screens/LoginScreen';
 
+import AuthenticationService from './services/AuthenticationService';
+
 import './App.css'
 
 const AppContainer = styled.div`
@@ -15,21 +17,45 @@ const AppContainer = styled.div`
 interface AppProps { }
 
 interface AppState {
-  isLoggedIn: boolean;
+  isLoggedin: boolean;
+  isLoggedoutDueToAuthFailure: boolean;
 }
 
 class App extends React.Component<AppProps, AppState> {
 
+  authenticationService: AuthenticationService = new AuthenticationService();
+
   state = {
-    isLoggedIn: false
+    isLoggedin: false,
+    isLoggedoutDueToAuthFailure: false
+  }
+
+  handleLogin = () => { 
+    this.setState({isLoggedin: true})
+  };
+
+  handleLogout = (loggedoutDueToAuthFailure: boolean = false) => {
+    console.log(loggedoutDueToAuthFailure);
+    this.authenticationService.logout();
+    this.setState({
+      isLoggedin: false,
+      isLoggedoutDueToAuthFailure: loggedoutDueToAuthFailure
+    });
   }
 
   render() {
-    const { isLoggedIn } = this.state;
+    const { isLoggedin, isLoggedoutDueToAuthFailure } = this.state;
     return (
       <AppContainer>
-        {!isLoggedIn && <LoginScreen onLoggedIn={() => this.setState({isLoggedIn: true})} />}
-        {isLoggedIn && <StoryEditorScreen onLoggedOut={() => this.setState({isLoggedIn: false})} />}
+        {(isLoggedin || isLoggedoutDueToAuthFailure) &&
+          <StoryEditorScreen onLoggedOut={this.handleLogout}  />
+        }
+        {!isLoggedin &&
+          <LoginScreen
+            loggingInAgain={isLoggedoutDueToAuthFailure}
+            onLoggedIn={this.handleLogin}
+          />
+        }
       </AppContainer>
     );
   }
