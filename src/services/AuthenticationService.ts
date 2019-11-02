@@ -14,6 +14,9 @@ class AuthenticationService {
 
   async login(username: string, password: string) {
 
+    console.log(username);
+    console.log(password);
+
     try {
 
       const response = await fetch(`${AuthenticationService.API_ROOT}/auth/authenticate`, {

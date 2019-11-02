@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import StoryEditorScreen from './screens/StoryEditorScreen';
+import LoginScreen from './screens/LoginScreen';
 
 import './App.css'
 
@@ -11,12 +12,24 @@ const AppContainer = styled.div`
   height: 100%;
 `;
 
-class App extends React.Component {
+interface AppProps { }
+
+interface AppState {
+  isLoggedIn: boolean;
+}
+
+class App extends React.Component<AppProps, AppState> {
+
+  state = {
+    isLoggedIn: false
+  }
 
   render() {
+    const { isLoggedIn } = this.state;
     return (
       <AppContainer>
-        <StoryEditorScreen />
+        {!isLoggedIn && <LoginScreen onLoggedIn={() => this.setState({isLoggedIn: true})} />}
+        {isLoggedIn && <StoryEditorScreen onLoggedOut={() => this.setState({isLoggedIn: false})} />}
       </AppContainer>
     );
   }

@@ -27,7 +27,9 @@ const StoryEditorContainer = styled.div`
   align-items: center;
 `;
 
-interface StoryEditorScreenProps {};
+interface StoryEditorScreenProps {
+  onLoggedOut: () => void;
+};
 
 interface StoryEditorScreenState {
   artworks: Artwork[],
@@ -66,12 +68,9 @@ class StoryEditorScreen extends React.Component<
         AuthenticationService.refreshAuthToken();
       } catch (e) {
         if (e.name === 'AuthenticationError') {
-          // TODO: Remove this, and let the HOC ErrorBoundary or
-          // something nicer log out the
-          // user if the token expires.
-          this.login();
+          this.props.onLoggedOut();
         } else {
-          throw e;
+          console.log(e);
         }
       }
     };
