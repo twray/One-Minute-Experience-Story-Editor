@@ -54,6 +54,7 @@ class StoryEditorScreen extends React.Component<
   }
 
   init = async () => {
+
     await this.login();
     await this.loadArtworks();
 
@@ -62,7 +63,7 @@ class StoryEditorScreen extends React.Component<
     // for a while
     window.onfocus = async () => {
       try {
-        await this.authenticationService.refreshAuthToken(true);
+        AuthenticationService.refreshAuthToken();
       } catch (e) {
         if (e.name === 'AuthenticationError') {
           // TODO: Remove this, and let the HOC ErrorBoundary or
