@@ -40,7 +40,7 @@ const PreviewImage: React.FC<PreviewImageProps> = props => {
   return (
     <PreviewImageContainer>
       <PreviewImageContainerInner>
-        {artwork &&
+        {artwork && artwork.image_with_aspect_ratio_url && 
           <PreviewImageImage src={artwork.image_with_aspect_ratio_url} alt={artwork.title} />
         }
       </PreviewImageContainerInner>

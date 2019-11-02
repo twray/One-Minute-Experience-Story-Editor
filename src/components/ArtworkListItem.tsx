@@ -31,6 +31,15 @@ const ArtworkThumbnail = styled.img`
   margin: 0 24px 0 12px;
 `;
 
+const ArtworkThumbnailPlaceholder = styled.div`
+  display: block;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 24px 0 12px;
+  border: 1px dashed #777777;
+`;
+
 const ArtworkTitleAndArtist = styled.div`
   flex: 1;
   display: flex;
@@ -60,7 +69,10 @@ const ArtworkListItem: React.FC<ArtworkListItemProps> = props => {
       onClick={() => onSelect(artwork)}
       {...(selected && {className: 'selected'})}
     >
-      <ArtworkThumbnail src={artwork.image_thumbnail_url} alt={artwork.title} />
+      {artwork.image_thumbnail_url
+        ? <ArtworkThumbnail src={artwork.image_thumbnail_url} alt={artwork.title} />
+        : <ArtworkThumbnailPlaceholder />
+      }
       <ArtworkTitleAndArtist>
         <Title>{artwork.title || '(No Title)'}</Title>
         {artwork.artist_name && <Artist>{artwork.artist_name}</Artist>}

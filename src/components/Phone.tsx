@@ -138,7 +138,9 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
     });
 
     if (this.props.artwork && this.props.artwork.status !== ArtworkStatus.New) {
+
       this.props.onImageUpdate(artwork, imageFile, imageFilename);
+      
     } else if (this.props.artwork && this.props.artwork.status === ArtworkStatus.New) {
 
       const reader = new FileReader();
@@ -152,6 +154,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
 
         const updatedArtwork: Artwork = {...this.props.artwork};
         updatedArtwork.image_url = fileData;
+        updatedArtwork.image_thumbnail_url = fileData;
         this.props.onTitleCardChange(updatedArtwork);
 
       }
@@ -159,7 +162,11 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
   }
 
   handleContinueButtonClick = () => {
-    if (this.props.artwork && this.props.artwork.status === ArtworkStatus.New) {
+    if (
+      this.props.artwork &&
+      this.props.artwork.status === ArtworkStatus.New &&
+      this.props.artwork.title
+    ) {
       const artwork: Artwork|undefined = this.props.artwork;
       const imageFile: File|undefined = this.state.selectedImageFile;
       const imageFilename: string|undefined = this.state.selectedImageFilename;

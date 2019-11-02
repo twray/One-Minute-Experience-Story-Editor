@@ -2,6 +2,9 @@ import React from 'react';
 
 import styled from 'styled-components';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+
 import { Artwork } from '../model/Artwork';
 
 import ArtworkListItem from './ArtworkListItem';
@@ -34,6 +37,7 @@ const SidebarHeaderContainer = styled.div`
   padding: 0 12px;
   flex-direction: column;
   justify-content: flex-end;
+  box-sizing: border-box;
 `;
 
 const SidebarHeader = styled.h2`
@@ -41,7 +45,21 @@ const SidebarHeader = styled.h2`
   color: #999999;
   padding: 0 0 18px 0;
   font-family: 'sf_compact_textmedium';
+  position: relative;
 `;
+
+const AddIconButton = styled.button`
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  border-radius: 50%;
+  position: absolute;
+  top: -1px;
+  right: 0;
+  border: none;
+  outline: none;
+  cursor: pointer;
+`
 
 const SidebarBodyContainer = styled.div`
   height: 100vh;
@@ -62,16 +80,20 @@ interface SidebarProps {
   artworks?: Artwork[];
   displayedArtwork?: Artwork;
   onArtworkSelect: (artwork: Artwork) => void;
+  onArtworkAdd: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = props => {
-  const { artworks, onArtworkSelect, displayedArtwork } = props;
+  const { artworks, displayedArtwork, onArtworkSelect, onArtworkAdd } = props;
   return (
     <SidebarContainer>
       <SidebarContainerInner>
         <SidebarHeaderContainer>
           <SidebarHeader>
             Stories
+            <AddIconButton onClick={() => onArtworkAdd()}>
+              <FontAwesomeIcon icon={faPlus} size="2x" color="#777777" />
+            </AddIconButton>
           </SidebarHeader>
         </SidebarHeaderContainer>
         <SidebarBodyContainer>
@@ -79,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = props => {
             {artworks && artworks.map((artwork: Artwork) => {
               return (
                 <ArtworkListItem
-                  key={artwork.id}
+                  key={artwork.id || '+'}
                   artwork={artwork}
                   onSelect={onArtworkSelect}
                   selected={displayedArtwork

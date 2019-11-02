@@ -92,7 +92,6 @@ class StoryEditorScreen extends React.Component<
   }
 
   loadArtworks = async () => {
-
     try {
       const artworks = await this.artworkService.loadAllArtworks();
       this.setState({artworks});
@@ -100,7 +99,6 @@ class StoryEditorScreen extends React.Component<
       console.log('Unable to load artworks');
       throw e;
     }
-
   }
 
   handleTitleCardChange = (updatedArtwork: Artwork) => {
@@ -114,7 +112,9 @@ class StoryEditorScreen extends React.Component<
   handleNewArtwork = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
     this.setState({isProcessing: true});
     const newArtworkWithImage = await this.artworkService.createArtwork(artwork, imageFile, imageFilename);
+    const artworks = await this.artworkService.loadAllArtworks();
     this.setState({
+      artworks: artworks,
       displayedArtwork: newArtworkWithImage,
       isProcessing: false
     });
@@ -123,6 +123,7 @@ class StoryEditorScreen extends React.Component<
   handleTitleCardImageSelect = async (artwork: Artwork, imageFile: File, imageFilename: string) => {
     this.setState({isProcessing: true});
     const artworkWithUpdatedImage: Artwork = await this.artworkService.updateArtworkImage(artwork, imageFile, imageFilename);
+    console.log('handleArtworkSelect method called');
     if (this.state.displayedArtwork) {
       const updatedArtwork: Artwork = {...artwork};
       updatedArtwork.image_url = artworkWithUpdatedImage.image_url;
@@ -153,6 +154,9 @@ class StoryEditorScreen extends React.Component<
         return artworkInList;
       }
     });
+    console.log('updating artwork called');
+    console.log(updatedArtwork);
+    console.log(updatedArtworks);
     this.setState({artworks: updatedArtworks});
     this.setState({displayedArtwork: updatedArtwork});
     if (updatedArtwork.status !== ArtworkStatus.New) {
@@ -160,10 +164,8 @@ class StoryEditorScreen extends React.Component<
     }
   }
 
-  addNewArtwork = () => {
-
+  addNewBlankArtwork = () => {
     const newArtworks: Artwork[] = [...this.state.artworks];
-
     const newArtwork: Artwork = {
       status: ArtworkStatus.New,
       title: '',
@@ -172,14 +174,11 @@ class StoryEditorScreen extends React.Component<
       artist_nationality: '',
       story_segments: []
     };
-
-    newArtworks.push(newArtwork);
-
+    newArtworks.unshift(newArtwork);
     this.setState({
       artworks: newArtworks,
       displayedArtwork: newArtwork
     });
-
   }
 
   render() {
@@ -191,6 +190,7 @@ class StoryEditorScreen extends React.Component<
             artworks={artworks}
             displayedArtwork={displayedArtwork}
             onArtworkSelect={this.handleArtworkSelect}
+            onArtworkAdd={this.addNewBlankArtwork}
           />
         }
         {displayedArtwork &&

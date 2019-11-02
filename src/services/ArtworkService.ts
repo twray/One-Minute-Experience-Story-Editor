@@ -111,7 +111,7 @@ class ArtworkService {
           throw new Error('Unable to load artworks due to the user not being logged in');
         }
 
-        const response = await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*`, {
+        const response = await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on`, {
           headers: {
             'Authorization': 'Bearer ' + AuthenticationService.token
           }

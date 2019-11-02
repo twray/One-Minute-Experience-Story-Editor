@@ -101,6 +101,7 @@ class TitleCard extends React.Component<
             label="Artist"
             value={artwork.artist_name}
             placeholder="e.g. Thomas Allom"
+            isOptional
             disabled={isProcessing}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('artist_name', e.target.value)
