@@ -47,6 +47,7 @@ const LoadingContainer = styled.div`
 const LoadingText = styled.p`
   color: #FFFFFF;
   font-family: 'sf_compact_textmedium';
+  text-align: center;
 `;
 
 interface TitleCardProps {
@@ -159,7 +160,10 @@ class TitleCard extends React.Component<
         </ArtworkImagePicker>
         {isProcessing &&
           <LoadingContainer>
-            <LoadingText>Processing Image ...</LoadingText>
+            <LoadingText>
+              <p>Processing image ...</p>
+              <p>This may take up to a minute.</p>
+            </LoadingText>
           </LoadingContainer>
         }
       </Card>
