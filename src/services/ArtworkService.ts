@@ -267,9 +267,14 @@ class ArtworkService {
             },
             body: JSON.stringify(artworkDB)
           }));
-          const result = await response.json();
-          const { data } = result;
-          resolve(this.artworkDBToArtwork(data));
+
+          if (response.status === 204) {
+            resolve();
+          } else {
+            const result = await response.json();
+            const { data } = result;
+            resolve(this.artworkDBToArtwork(data));
+          }
 
         } catch (e) {
 
@@ -331,14 +336,8 @@ class ArtworkService {
           throw new Error('Cannot delete artwork: artwork does not exist');
         }
 
-        console.log('deleting artwork');
-
-        this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': 'Bearer ' + AuthenticationService.token
-          }
-        }));
+        artwork.status = ArtworkStatus.Deleted;
+        await this.updateArtwork(artwork);
         resolve();
 
       } catch (e) {

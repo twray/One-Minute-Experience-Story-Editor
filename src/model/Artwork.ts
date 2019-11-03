@@ -44,7 +44,8 @@ export interface ArtworkCreatedByDB {
 export enum ArtworkStatus {
   New = 'new',
   Published = 'published',
-  Draft = 'draft'
+  Draft = 'draft',
+  Deleted = 'deleted'
 }
 
 export interface ArtworkThumbnail {

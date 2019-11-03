@@ -1,6 +1,7 @@
 import React, { MouseEvent } from 'react';
 
 import styled from 'styled-components';
+import classNames from 'classnames';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
@@ -62,7 +63,14 @@ const Title = styled.p`
 `;
 
 const Artist = styled.p`
-  margin: 4px 0 0 0;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 200px;
+  &.truncated {
+    max-width: 150px;
+  }
 `;
 
 const ExampleText = styled.label`
@@ -107,11 +115,21 @@ interface ArtworkListItemProps {
 };
 
 const ArtworkListItem: React.FC<ArtworkListItemProps> = props => {
+
   const { artwork, onSelect, onDelete, selected } = props;
+
+  const artworkListItemContainerClasses = classNames({
+    'selected': selected
+  });
+
+  const artistClasses = classNames({
+    'truncated': artwork.is_example,
+  });
+
   return (
     <ArtworkListItemContainer
+      className={artworkListItemContainerClasses}
       onClick={() => onSelect(artwork)}
-      {...(selected && {className: 'selected'})}
     >
       {artwork.image_thumbnail_url
         ? <ArtworkThumbnail src={artwork.image_thumbnail_url} alt={artwork.title} />
@@ -119,7 +137,9 @@ const ArtworkListItem: React.FC<ArtworkListItemProps> = props => {
       }
       <ArtworkTitleAndArtist>
         <Title>{artwork.title || '(No Title)'}</Title>
-        {artwork.artist_name && <Artist>{artwork.artist_name}</Artist>}
+        {artwork.artist_name &&
+          <Artist className={artistClasses}>{artwork.artist_name}</Artist>
+        }
       </ArtworkTitleAndArtist>
       {!artwork.is_example &&
         AuthenticationService.loggedInUser &&
