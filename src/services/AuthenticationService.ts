@@ -1,3 +1,5 @@
+import { UserDB } from '../model/User';
+
 export class AuthenticationError extends Error {
 
   name: string = 'AuthenticationError';
@@ -16,14 +18,14 @@ class AuthenticationService {
   static API_ROOT: string = process.env.REACT_APP_SERVER_API_ROOT || '';
 
   static token: string|null;
-  static loggedInUsername: string|null;
+  static loggedInUser: UserDB|null;
   static refreshAuthTokenTimeout: number = 0;
 
   async login(username: string, password: string) {
 
     try {
 
-      const response = await fetch(`${AuthenticationService.API_ROOT}/auth/authenticate`, {
+      const authResponse = await fetch(`${AuthenticationService.API_ROOT}/auth/authenticate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -33,21 +35,30 @@ class AuthenticationService {
           password: password
         })
       });
-      const result = await response.json();
+      const authResult = await authResponse.json();
 
       if (
-        response.status === 401 ||
-        response.status === 404 ||
-        response.status === 422
+        authResponse.status === 401 ||
+        authResponse.status === 404 ||
+        authResponse.status === 422
       ) {
-        throw new AuthenticationError(response.status);
-      } else if (result.error) {
-        throw new Error(result.error && result.error.message);
+        throw new AuthenticationError(authResponse.status);
+      } else if (authResult.error) {
+        throw new Error(authResult.error && authResult.error.message);
       }
 
-      if (result && result.data && result.data.token) {
-        AuthenticationService.token = result.data.token;
-        AuthenticationService.loggedInUsername = username;
+      if (authResult && authResult.data && authResult.data.token) {
+
+        AuthenticationService.token = authResult.data.token;
+
+        const userResponse = await fetch(`${AuthenticationService.API_ROOT}/users/me`, {
+          headers: {
+            'Authorization': 'Bearer ' + AuthenticationService.token
+          }
+        });
+        const userResult = await userResponse.json();
+        AuthenticationService.loggedInUser = userResult.data;
+
         setTimeout(() => AuthenticationService.refreshAuthToken(), AuthenticationService.TOKEN_REFRESH_RATE * 1000);
         console.log('logged in with token: ' + AuthenticationService.token);
       } else {
@@ -64,8 +75,8 @@ class AuthenticationService {
   async logout() {
 
     AuthenticationService.token = null;
-    AuthenticationService.loggedInUsername = null;
-    
+    AuthenticationService.loggedInUser = null;
+
   }
 
   static async refreshAuthToken() {

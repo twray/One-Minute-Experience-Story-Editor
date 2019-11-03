@@ -5,6 +5,7 @@ export interface ArtworkBase {
   artist_name: string;
   artist_nationality: string;
   year: string;
+  is_example: boolean;
 }
 
 export interface Artwork extends ArtworkBase {
@@ -12,6 +13,7 @@ export interface Artwork extends ArtworkBase {
   image_with_aspect_ratio_url?: string;
   image_thumbnail_url?: string;
   story_segments: StorySegment[];
+  created_by_user_id?: number;
 }
 
 export interface ArtworkDB extends ArtworkBase {
@@ -21,6 +23,7 @@ export interface ArtworkDB extends ArtworkBase {
   story_segment_4: string;
   story_segment_5: string;
   image?: ArtworkImageDB;
+  created_by?: ArtworkCreatedByDB
 }
 
 export interface ArtworkImageDB {
@@ -32,6 +35,10 @@ export interface ArtworkImageDB {
 export interface ArtworkImageDataDB {
   full_url: string;
   thumbnails: ArtworkThumbnail[];
+}
+
+export interface ArtworkCreatedByDB {
+  id: number;
 }
 
 export enum ArtworkStatus {

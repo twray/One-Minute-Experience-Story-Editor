@@ -241,6 +241,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                         <GeneralStorySegmentCard
                           prompt={storyPrompt}
                           storySegment={storySegment}
+                          readOnly={artwork.is_example}
                           onStorySegmentChange={onStorySegmentChange}
                         />
                       </CardContainer>

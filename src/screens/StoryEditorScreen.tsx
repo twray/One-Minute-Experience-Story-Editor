@@ -34,7 +34,7 @@ interface StoryEditorScreenProps {
 
 interface StoryEditorScreenState {
   artworks: Artwork[],
-  displayedArtwork?: Artwork;
+  displayedArtwork: Artwork|null;
   selectedCardIndex: number;
   isProcessing: boolean;
   statusBarMessage?: string;
@@ -51,7 +51,7 @@ class StoryEditorScreen extends React.Component<
 
   state = {
     artworks: [],
-    displayedArtwork: undefined,
+    displayedArtwork: null,
     selectedCardIndex: 0,
     isProcessing: false,
     statusBarMessage: undefined,
@@ -94,7 +94,9 @@ class StoryEditorScreen extends React.Component<
         year: '',
         artist_name: '',
         artist_nationality: '',
-        story_segments: []
+        story_segments: [],
+        is_example: false,
+        created_by_user_id: (AuthenticationService.loggedInUser && AuthenticationService.loggedInUser.id) || undefined
       };
       newArtworks.unshift(newArtwork);
       this.setState({
@@ -130,6 +132,24 @@ class StoryEditorScreen extends React.Component<
       this.setState({
         isProcessing: false
       });
+    }
+  }
+
+  handleDeleteArtwork = async (artwork: Artwork) => {
+    try {
+      const updatedArtworks: Artwork[] = this.state.artworks.filter((artworkToDelete: Artwork) => {
+        return artworkToDelete.id !== artwork.id;
+      });
+      if (artwork.status !== ArtworkStatus.New) {
+        await this.artworkService.deleteArtwork(artwork);
+      }
+      this.setState({
+        artworks: updatedArtworks,
+        displayedArtwork: null
+      });
+    } catch (e) {
+      this.handleServiceErrorGracefully(e, 'A problem occurred while deleting the story. Please refresh the page and try again.');
+      this.loadArtworks();
     }
   }
 
@@ -205,15 +225,16 @@ class StoryEditorScreen extends React.Component<
         {artworks &&
           <Sidebar
             artworks={artworks}
-            displayedArtwork={displayedArtwork}
+            displayedArtwork={displayedArtwork || undefined}
             onArtworkSelect={this.handleArtworkSelect}
+            onArtworkDelete={this.handleDeleteArtwork}
             onArtworkAdd={this.addNewBlankArtwork}
           />
         }
         {displayedArtwork &&
           <React.Fragment>
             <Phone
-              artwork={displayedArtwork}
+              artwork={displayedArtwork || undefined}
               storyPrompts={StoryPrompts}
               isProcessing={isProcessing}
               selectedIndex={selectedCardIndex}
@@ -223,7 +244,7 @@ class StoryEditorScreen extends React.Component<
               onImageUpdate={this.handleTitleCardImageSelect}
               onStorySegmentChange={this.handleStorySegmentChange}
             />
-            <PreviewImage artwork={displayedArtwork} />
+            <PreviewImage artwork={displayedArtwork || undefined} />
           </React.Fragment>
         }
       </StoryEditorContainer>

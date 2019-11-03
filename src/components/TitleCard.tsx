@@ -93,6 +93,7 @@ class TitleCard extends React.Component<
             value={artwork.title}
             placeholder="e.g. Queen’s Park, Brighton"
             disabled={isProcessing}
+            readOnly={artwork.is_example}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('title', e.target.value)
             }}
@@ -103,6 +104,7 @@ class TitleCard extends React.Component<
             placeholder="e.g. Thomas Allom"
             isOptional
             disabled={isProcessing}
+            readOnly={artwork.is_example}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('artist_name', e.target.value)
             }}
@@ -113,6 +115,7 @@ class TitleCard extends React.Component<
             placeholder="e.g. 1835"
             isOptional
             disabled={isProcessing}
+            readOnly={artwork.is_example}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('year', e.target.value)
             }}
@@ -123,6 +126,7 @@ class TitleCard extends React.Component<
             placeholder="e.g. Dutch"
             isOptional
             disabled={isProcessing}
+            readOnly={artwork.is_example}
             onChange={(e: ChangeEvent<HTMLInputElement>) => { 
               this.updateArtworkField('artist_nationality', e.target.value)
             }}
@@ -131,23 +135,27 @@ class TitleCard extends React.Component<
         <ArtworkImagePicker
           style={{backgroundImage: `url('${artwork.image_url}')`}}
         >
-          <Button
-            buttonStyle="white-transparent"
-            buttonSize="md"
-            text={
-              !artwork.image_url
-                ? 'Add Photo ...'
-                : 'Change Photo ...'
-            }
-            disabled={isProcessing}
-            onClick={() => imageFilePickerRef.current && imageFilePickerRef.current.click()}
-          />
-          <ImageFilePicker
-            ref={imageFilePickerRef}
-            type="file"
-            accept="image/*"
-            onChange={this.handleImageSelect}
-          />
+          {!artwork.is_example &&
+            <React.Fragment>
+              <Button
+                buttonStyle="white-transparent"
+                buttonSize="md"
+                text={
+                  !artwork.image_url
+                    ? 'Add Photo ...'
+                    : 'Change Photo ...'
+                }
+                disabled={isProcessing}
+                onClick={() => imageFilePickerRef.current && imageFilePickerRef.current.click()}
+              />
+              <ImageFilePicker
+                ref={imageFilePickerRef}
+                type="file"
+                accept="image/*"
+                onChange={this.handleImageSelect}
+              />
+            </React.Fragment>
+          }
         </ArtworkImagePicker>
         {isProcessing &&
           <LoadingContainer>

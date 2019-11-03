@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import { Artwork } from '../model/Artwork';
+import { Artwork, ArtworkStatus } from '../model/Artwork';
 
 import ArtworkListItem from './ArtworkListItem';
 
@@ -51,8 +51,8 @@ const SidebarHeader = styled.h2`
 const AddIconButton = styled.button`
   width: 30px;
   height: 30px;
+  padding: 0;
   background-color: transparent;
-  border-radius: 50%;
   position: absolute;
   top: -1px;
   right: 0;
@@ -80,11 +80,28 @@ interface SidebarProps {
   artworks?: Artwork[];
   displayedArtwork?: Artwork;
   onArtworkSelect: (artwork: Artwork) => void;
+  onArtworkDelete: (artwork: Artwork) => void;
   onArtworkAdd: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = props => {
-  const { artworks, displayedArtwork, onArtworkSelect, onArtworkAdd } = props;
+
+  const {
+    artworks,
+    displayedArtwork,
+    onArtworkSelect,
+    onArtworkDelete,
+    onArtworkAdd
+  } = props;
+
+  const artworksToSort = artworks != null ? artworks : [];
+
+  const sortedArtworks: Artwork[] = [
+    ...artworksToSort.filter((artwork: Artwork) => artwork.status === ArtworkStatus.New),
+    ...artworksToSort.filter((artwork: Artwork) => !artwork.is_example && artwork.status !== ArtworkStatus.New),
+    ...artworksToSort.filter((artwork: Artwork) => artwork.is_example && artwork.status !== ArtworkStatus.New)
+  ];
+
   return (
     <SidebarContainer>
       <SidebarContainerInner>
@@ -98,12 +115,13 @@ const Sidebar: React.FC<SidebarProps> = props => {
         </SidebarHeaderContainer>
         <SidebarBodyContainer>
           <ArtworkList>
-            {artworks && artworks.map((artwork: Artwork) => {
+            {sortedArtworks && sortedArtworks.map((artwork: Artwork) => {
               return (
                 <ArtworkListItem
                   key={artwork.id || '+'}
                   artwork={artwork}
                   onSelect={onArtworkSelect}
+                  onDelete={onArtworkDelete}
                   selected={displayedArtwork
                     ? (artwork.id === displayedArtwork.id)
                     : false

@@ -35,7 +35,6 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   handleLogout = (loggedoutDueToAuthFailure: boolean = false) => {
-    console.log(loggedoutDueToAuthFailure);
     this.authenticationService.logout();
     this.setState({
       isLoggedin: false,

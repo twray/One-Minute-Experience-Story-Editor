@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from 'react';
 
 import styled from 'styled-components';
+import classNames from 'classnames';
 
 const SingleLineInputContainer = styled.div`
   width: 100%;
@@ -12,6 +13,13 @@ const SingleLineInputContainer = styled.div`
   &.dark input {
     color: #FFFFFF;
     border-bottom-color: #FFFFFF;
+  }
+  &.readonly input {
+    border-bottom-color: transparent;
+  }
+  &.readonly input:disabled {
+    opacity: 1;
+    color: inherit;
   }
 `;
 
@@ -61,10 +69,12 @@ interface SingleLineInputProps {
   inputStyle?:'normal'|'dark';
   isOptional?: boolean;
   disabled?: boolean;
+  readOnly?: boolean;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 };
 
 const SingleLineInput: React.FC<SingleLineInputProps> = (props) => {
+
   const {
     label,
     value,
@@ -72,18 +82,25 @@ const SingleLineInput: React.FC<SingleLineInputProps> = (props) => {
     inputStyle,
     isOptional,
     disabled,
+    readOnly,
     onChange
   } = props;
+
+  const classes = classNames(
+    inputStyle ? inputStyle : undefined,
+    {'readonly': readOnly}
+  );
+
   return (
-    <SingleLineInputContainer {...(inputStyle && {className: inputStyle})}>
+    <SingleLineInputContainer className={classes}>
       {label && <Label htmlFor={'label-' + label.toLowerCase()}>{label}</Label>}
-      {isOptional && <OptionalLabel>Optional</OptionalLabel>}
+      {isOptional && !readOnly && <OptionalLabel>Optional</OptionalLabel>}
       <Input
         {...(label && {id: 'label-' + label.toLowerCase()})}
         type="text"
         value={value || ''}
-        placeholder={placeholder ? placeholder : ''}
-        disabled={disabled}
+        placeholder={(placeholder && !readOnly) ? placeholder : ''}
+        disabled={disabled || readOnly}
         onChange={onChange}
       />
     </SingleLineInputContainer>

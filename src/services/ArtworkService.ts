@@ -30,9 +30,16 @@ class ArtworkService {
 
   private validateResponse(response: Response) {
 
-    if (response.status === 401 || response.status === 403) {
+    if (
+      response.status === 401 || 
+      response.status === 403
+    ) {
       throw new AuthenticationError(response.status);
-    } else if (response.status !== 200) {
+    } else if (
+      response.status !== 201 &&
+      response.status !== 204 &&
+      response.status !== 200
+    ) {
       throw new APIError(response.status);
     }
 
@@ -74,7 +81,9 @@ class ArtworkService {
         {id: 3, story_segment: artworkDB.story_segment_3 || ''},
         {id: 4, story_segment: artworkDB.story_segment_4 || ''},
         {id: 5, story_segment: artworkDB.story_segment_5 || ''}
-      ]
+      ],
+      is_example: artworkDB.is_example,
+      created_by_user_id: artworkDB.created_by && artworkDB.created_by.id
     }
 
   }
@@ -125,18 +134,31 @@ class ArtworkService {
 
       try {
 
-        const response = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on`, {
+        let exampleArtworks: Artwork[] = [];
+        let artworks: Artwork[] = [];
+
+        const exampleArtworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[is_example]=1`, {
           headers: {
             'Authorization': 'Bearer ' + AuthenticationService.token
           }
         }));
-        if (response.status === 401) {
-          throw new AuthenticationError(response.status);
+
+        const exampleArtworksResult = await exampleArtworksResponse.json();
+        exampleArtworks = exampleArtworksResult.data.map((artworkDB: ArtworkDB): Artwork => this.artworkDBToArtwork(artworkDB));
+
+        if (AuthenticationService.loggedInUser) {
+
+          const artworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[created_by]=${AuthenticationService.loggedInUser.id}&filter[is_example]=0`, {
+            headers: {
+              'Authorization': 'Bearer ' + AuthenticationService.token
+            }
+          }));
+          const artworksResult = await artworksResponse.json();
+          artworks = artworksResult.data.map((artworkDB: ArtworkDB): Artwork => this.artworkDBToArtwork(artworkDB));
+
         }
-        const result = await response.json();
-        const { data } = result;
-        const artworks: Artwork[] = data.map((artworkDB: ArtworkDB): Artwork => this.artworkDBToArtwork(artworkDB));
-        resolve(artworks);
+
+        resolve([...exampleArtworks, ...artworks]);
 
       } catch (e) {
 
@@ -175,7 +197,8 @@ class ArtworkService {
             story_segment_2: '',
             story_segment_3: '',
             story_segment_4: '',
-            story_segment_5: ''
+            story_segment_5: '',
+            is_example: artwork.is_example
           };
 
           const response = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*`, {
@@ -186,9 +209,6 @@ class ArtworkService {
             },
             body: JSON.stringify({...artworkDB, image: imageID})
           }));
-          if (response.status === 401) {
-            throw new AuthenticationError(response.status);
-          }
           const result = await response.json();
           const { data } = result;
           resolve(this.artworkDBToArtwork(data));
@@ -235,7 +255,8 @@ class ArtworkService {
             story_segment_2: artwork.story_segments[1].story_segment,
             story_segment_3: artwork.story_segments[2].story_segment,
             story_segment_4: artwork.story_segments[3].story_segment,
-            story_segment_5: artwork.story_segments[4].story_segment
+            story_segment_5: artwork.story_segments[4].story_segment,
+            is_example: artwork.is_example
           };
 
           const response = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}?fields=*,image.*`, {
@@ -246,9 +267,6 @@ class ArtworkService {
             },
             body: JSON.stringify(artworkDB)
           }));
-          if (response.status === 401) {
-            throw new AuthenticationError(response.status);
-          }
           const result = await response.json();
           const { data } = result;
           resolve(this.artworkDBToArtwork(data));
@@ -288,9 +306,6 @@ class ArtworkService {
           },
           body: JSON.stringify({image: imageID})
         }));
-        if (response.status === 401) {
-          throw new AuthenticationError(response.status);
-        }
         const result = await response.json();
         const { data } = result;
         resolve(this.artworkDBToArtwork(data));
@@ -298,6 +313,37 @@ class ArtworkService {
       } catch (e) {
 
         console.error('Unable to update artwork image.');
+        reject(e);
+
+      }
+
+    });
+
+  }
+
+  async deleteArtwork(artwork: Artwork): Promise<Artwork> {
+
+    return new Promise<Artwork>(async (resolve, reject) => {
+
+      try {
+
+        if (artwork.status === ArtworkStatus.New) {
+          throw new Error('Cannot delete artwork: artwork does not exist');
+        }
+
+        console.log('deleting artwork');
+
+        this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}/${artwork.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + AuthenticationService.token
+          }
+        }));
+        resolve();
+
+      } catch (e) {
+
+        console.error('Unable to delete artwork.');
         reject(e);
 
       }

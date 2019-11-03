@@ -66,11 +66,11 @@ const StatusBar: React.FC<StatusBarProps> = props => {
     <StatusBarContainer>
       {message && <StatusBarNotification>{message}</StatusBarNotification>}
       {error && <StatusBarError>{error}</StatusBarError>}
-      {AuthenticationService.token &&
+      {AuthenticationService.token && AuthenticationService.loggedInUser &&
         <StatusBarText>
           Logged in as:
           <StatusBarLoggedInUsername>
-            {AuthenticationService.loggedInUsername}
+            {AuthenticationService.loggedInUser.email}
           </StatusBarLoggedInUsername>
         </StatusBarText>
       }

@@ -1,6 +1,7 @@
 import React, { ChangeEvent } from 'react';
 
 import styled from 'styled-components';
+import classNames from 'classnames';
 
 import { Card } from './Card';
 import { StoryPrompt, StorySegment } from '../model/Artwork';
@@ -36,6 +37,10 @@ const StorySegmentSectionInput = styled.textarea`
   &::placeholder {
     color: #AAAAAA;
   }
+  &.readonly:disabled {
+    opacity: 1;
+    color: inherit;
+  }
 `;
 
 const CharacterCounter = styled.span`
@@ -53,6 +58,7 @@ const CharacterCounter = styled.span`
 interface GeneralStorySegmentCardProps {
   prompt: StoryPrompt;
   storySegment: StorySegment;
+  readOnly?: boolean;
   onStorySegmentChange: (storySegment: StorySegment) => void;
 };
 
@@ -81,14 +87,13 @@ class GeneralStorySegmentCard extends React.Component<
 
   render() {
 
-    const {
-      prompt,
-      storySegment
-    } = this.props;
-    const {
-      storySegmentSectionInputIsFocused
-    } = this.state;
+    const { prompt, storySegment, readOnly } = this.props;
+    const { storySegmentSectionInputIsFocused } = this.state;
     const storySegmentLengthRemaining = maxStorySegmentLength - storySegment.story_segment.length;
+
+    const classes = classNames(
+      {'readonly': readOnly}
+    );
 
     return (
       <Card>
@@ -96,14 +101,15 @@ class GeneralStorySegmentCard extends React.Component<
           {prompt.prompt}
         </Prompt>
         <StorySegmentSection>
-          <StorySegmentSectionInput
-            placeholder="Write your story here ..."
+          <StorySegmentSectionInput className={classes}
+            placeholder={!readOnly ? 'Write your story here ...' : ''}
             value={storySegment ? storySegment.story_segment : ''}
             onChange={this.handleStorySegmentSectionInputChange}
             maxLength={maxStorySegmentLength}
             onFocus={() => this.setState({storySegmentSectionInputIsFocused: true})}
             onBlur={() => this.setState({storySegmentSectionInputIsFocused: false})}
             tabIndex={-1}
+            disabled={readOnly}
           >
           </StorySegmentSectionInput>
           {storySegmentSectionInputIsFocused &&
