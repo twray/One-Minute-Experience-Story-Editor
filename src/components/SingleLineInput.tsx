@@ -93,7 +93,9 @@ const SingleLineInput: React.FC<SingleLineInputProps> = (props) => {
 
   return (
     <SingleLineInputContainer className={classes}>
-      {label && <Label htmlFor={'label-' + label.toLowerCase()}>{label}</Label>}
+      {label && (!readOnly || (readOnly && value)) &&
+        <Label htmlFor={'label-' + label.toLowerCase()}>{label}</Label>
+      }
       {isOptional && !readOnly && <OptionalLabel>Optional</OptionalLabel>}
       <Input
         {...(label && {id: 'label-' + label.toLowerCase()})}

@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import StatusBar from '../components/StatusBar';
 import Sidebar from '../components/Sidebar';
 import Phone from '../components/Phone';
+import IntroSection from '../components/IntroSection';
 import PreviewImage from '../components/PreviewImage';
 
 import AuthenticationService from '../services/AuthenticationService';
@@ -140,13 +141,13 @@ class StoryEditorScreen extends React.Component<
       const updatedArtworks: Artwork[] = this.state.artworks.filter((artworkToDelete: Artwork) => {
         return artworkToDelete.id !== artwork.id;
       });
-      if (artwork.status !== ArtworkStatus.New) {
-        await this.artworkService.deleteArtwork(artwork);
-      }
       this.setState({
         artworks: updatedArtworks,
         displayedArtwork: null
       });
+      if (artwork.status !== ArtworkStatus.New) {
+        await this.artworkService.deleteArtwork(artwork);
+      }
     } catch (e) {
       this.handleServiceErrorGracefully(e, 'A problem occurred while deleting the story. Please refresh the page and try again.');
       this.loadArtworks();
@@ -246,6 +247,9 @@ class StoryEditorScreen extends React.Component<
             />
             <PreviewImage artwork={displayedArtwork || undefined} />
           </React.Fragment>
+        }
+        {!displayedArtwork &&
+          <IntroSection onGetStartedButtonClick={this.addNewBlankArtwork} />
         }
       </StoryEditorContainer>
     );

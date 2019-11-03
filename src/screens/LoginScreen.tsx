@@ -73,6 +73,7 @@ interface LogInScreenProps {
 interface LoginScreenState {
   username: string;
   loginStatus: string;
+  isLoggingIn: boolean;
 }
 
 class LoginScreen extends React.Component<
@@ -84,27 +85,17 @@ class LoginScreen extends React.Component<
 
   state = {
     username: '',
-    loginStatus: ' '
+    loginStatus: ' ',
+    isLoggingIn: false
   }
-
-  // MOCK: Log me in automatically
-  /*
-  async componentDidMount() {
-    this.setState({loginStatus: 'Logging in ...'});
-    await this.authenticationService.login(
-      process.env.REACT_APP_MOCK_USERNAME || '',
-      process.env.REACT_APP_MOCK_PASSWORD || ''
-    );
-    if (AuthenticationService.token) {
-      this.props.onLoggedIn();
-    }
-  }
-  */
 
   handleLogInButtonClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
-      this.setState({loginStatus: 'Logging in ...'});
+      this.setState({
+        loginStatus: 'Logging in ...',
+        isLoggingIn: true
+      });
       await this.authenticationService.login(
         this.state.username,
         process.env.REACT_APP_MOCK_PASSWORD || ''
@@ -120,12 +111,14 @@ class LoginScreen extends React.Component<
           this.setState({loginStatus: 'This e-mail is not registered with us.'});
         }
       }
+    } finally {
+      this.setState({isLoggingIn: false});
     }
   }
 
   render() {
     const { loggingInAgain } = this.props;
-    const { username, loginStatus } = this.state;
+    const { username, loginStatus, isLoggingIn } = this.state;
     return (
       <LoginScreenContainer {...(loggingInAgain && {className: 'logging-in-again'})}>
         <LoginAreaContainer autoComplete="off">
@@ -154,6 +147,7 @@ class LoginScreen extends React.Component<
           <LogInButton
             buttonStyle="white-transparent"
             text="Log In"
+            disabled={isLoggingIn}
             onClick={this.handleLogInButtonClick}
           />
         </LoginAreaContainer>

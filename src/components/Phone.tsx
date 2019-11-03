@@ -159,6 +159,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
         const updatedArtwork: Artwork = {...this.props.artwork};
         updatedArtwork.image_url = fileData;
         updatedArtwork.image_thumbnail_url = fileData;
+        updatedArtwork.image_with_aspect_ratio_url = fileData;
         this.props.onTitleCardChange(updatedArtwork);
       }
     }
@@ -275,7 +276,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                   <Button
                     text="Continue"
                     buttonStyle="tertiary"
-                    disabled={!(artwork.title && selectedImageFile)}
+                    disabled={!(artwork.title && selectedImageFile) || isProcessing}
                     onClick={this.handleContinueButtonClick}
                   />
                 </CardNavigation>

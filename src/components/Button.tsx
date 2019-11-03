@@ -19,7 +19,7 @@ const ButtonContainer = styled.button`
   cursor: pointer;
   outline: none;
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.2;
     cursor: default;
   }
   &.primary {
