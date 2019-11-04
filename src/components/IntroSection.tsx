@@ -78,20 +78,19 @@ const IntroSection: React.FC<IntroSectionProps> = props => {
             You can use this tool to write short, informal stories about the objects you see in this museum. Visitors can use the One Minute mobile app to scan objects and read these stories.
           </p>
           <h3>
-            How do I write these stories?
+            Getting started
           </h3>
           <p>
-            You first add some basic information about the object and upload a photo. You'll then be given prompts that will help you write the story.
+            First, find an object in the museum that interests you. Then search for that object using our online <a href="https://dams-brightonmuseums.org.uk/assetbank-pavilion/action/viewHome" target="_blank">digital media bank</a> and download its image. Feel free to search or browse other objects that you may find interesting.
           </p>
+          <p>
+            Within this story editor tool, you can write a new story by clicking the <strong>+</strong> button at the top-left of the screen. To help you get started, we've provided some examples that you can look at.
+          </p>
+          <h3>
+            Writing with a plot
+          </h3>
           <p>
             When writing, choose an angle that will become the "plot" of the story. For example, if you were looking at a painting, frame the story around the artist's painting technique or how it depicts the people or places in that painting.
-          </p>
-          <p>
-            You'll be writing the story exactly as it appears on the visitor's phone. This is so you get the best impression of what the story looks like from a visitor's point of view.
-          </p>
-          <h3>How do I get started?</h3>
-          <p>
-            To write your first story, just click the <strong>+</strong> button at the top-left of the screen. To help you get started, we've provided some examples that you can look at.
           </p>
           <p>&nbsp;</p>
           <GetStartedButton

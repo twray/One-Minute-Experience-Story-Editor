@@ -90,7 +90,6 @@ class LoginScreen extends React.Component<
   }
 
   // MOCK: Log me in automatically
-  /*
   async componentDidMount() {
     this.setState({
       loginStatus: 'Logging in ...',
@@ -104,7 +103,6 @@ class LoginScreen extends React.Component<
       this.props.onLoggedIn();
     }
   }
-  */
 
   handleLogInButtonClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
