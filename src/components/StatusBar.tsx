@@ -8,9 +8,11 @@ const StatusBarContainer = styled.div`
   position: absolute;
   top: 0;
   right: 0;
+  left: 0;
   height: 72px;
   display: flex;
   flex-direction: row;
+  justify-content: flex-end;
   align-items: center;
   padding: 16px 40px;
   font-size: 14px;
@@ -19,6 +21,11 @@ const StatusBarContainer = styled.div`
   & > span {
     margin: 0 20px 0 0;
   }
+`;
+
+const StatusBarRight = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 const StatusBarText = styled.span`
@@ -64,17 +71,19 @@ const StatusBar: React.FC<StatusBarProps> = props => {
   const { message, error, onLogoutButtonClick } = props
   return (
     <StatusBarContainer>
-      {message && <StatusBarNotification>{message}</StatusBarNotification>}
-      {error && <StatusBarError>{error}</StatusBarError>}
-      {AuthenticationService.token && AuthenticationService.loggedInUser &&
-        <StatusBarText>
-          Logged in as:
-          <StatusBarLoggedInUsername>
-            {AuthenticationService.loggedInUser.email}
-          </StatusBarLoggedInUsername>
-        </StatusBarText>
-      }
-      <StatusBarLink onClick={onLogoutButtonClick}>Log out</StatusBarLink>
+      <StatusBarRight>
+        {message && <StatusBarNotification>{message}</StatusBarNotification>}
+        {error && <StatusBarError>{error}</StatusBarError>}
+        {AuthenticationService.token && AuthenticationService.loggedInUser &&
+          <StatusBarText>
+            Logged in as:
+            <StatusBarLoggedInUsername>
+              {AuthenticationService.loggedInUser.email}
+            </StatusBarLoggedInUsername>
+          </StatusBarText>
+        }
+        <StatusBarLink onClick={onLogoutButtonClick}>Log out</StatusBarLink>
+      </StatusBarRight>
     </StatusBarContainer>
   )
 }
