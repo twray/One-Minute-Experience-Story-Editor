@@ -70,7 +70,10 @@ class StoryEditorScreen extends React.Component<
   }
 
   handleArtworkSelect = (artwork: Artwork) => {
-    this.setState({displayedArtwork: artwork});
+    this.setState({
+      displayedArtwork: artwork,
+      selectedCardIndex: 0
+    });
   }
 
   handleCardIndexChange = (index: number) => {

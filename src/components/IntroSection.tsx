@@ -90,7 +90,7 @@ const IntroSection: React.FC<IntroSectionProps> = props => {
             Writing with a plot
           </h3>
           <p>
-            When writing, choose an angle that will become the "plot" of the story. For example, if you were looking at a painting, frame the story around the artist's painting technique or how it depicts the people or places in that painting.
+            When writing, choose an angle that will become the "plot" of the story. For example, if you were looking at a painting, frame the story around the artist's painting technique or how it depicts the people and places in that painting.
           </p>
           <p>&nbsp;</p>
           <GetStartedButton
