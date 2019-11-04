@@ -84,7 +84,7 @@ const IntroSection: React.FC<IntroSectionProps> = props => {
             You first add some basic information about the object and upload a photo. You'll then be given prompts that will help you write the story.
           </p>
           <p>
-            When writing, choose an angle that will become the "plot" of the story. For example, if you were looking at a painting, frame the story around the artist's painting technique, and how it depicts the people or places in that painting.
+            When writing, choose an angle that will become the "plot" of the story. For example, if you were looking at a painting, frame the story around the artist's painting technique or how it depicts the people or places in that painting.
           </p>
           <p>
             You'll be writing the story exactly as it appears on the visitor's phone. This is so you get the best impression of what the story looks like from a visitor's point of view.
