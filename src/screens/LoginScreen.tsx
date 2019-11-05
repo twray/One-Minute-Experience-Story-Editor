@@ -42,6 +42,9 @@ const LoginAreaContainer = styled.form`
   justify-content: center;
   align-items: center;
   color: #FFFFFF;
+  @media screen and (max-width: 576px) {
+    height: auto;
+  }
 `;
 
 const OneMinuteLoginIcon = styled.img`
