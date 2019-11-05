@@ -28,6 +28,10 @@
 
 /* Generic Styling for HTML, Body, App Container */
 
+body {
+  touch-action: manipulation;
+}
+
 body, html, #root {
   width: 100%;
   height: 100%;

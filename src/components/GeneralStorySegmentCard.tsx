@@ -34,6 +34,7 @@ const StorySegmentSectionInput = styled.textarea`
   outline: none;
   background: none;
   resize: none;
+  border-radius: 0:
   &::placeholder {
     color: #AAAAAA;
   }
