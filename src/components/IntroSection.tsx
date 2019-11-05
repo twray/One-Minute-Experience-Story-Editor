@@ -45,7 +45,6 @@ const IntroSectionContainerInner = styled.div`
   @media screen and (max-width: 1280px) {
     max-height: none;
     margin-top: 72px;
-    padding: 0 17px;
   }
   @media screen and (max-width: 576px) {
     margin-top: 128px;
@@ -62,6 +61,9 @@ const IntroSectionHeaderContainer = styled.div`
   flex-direction: column;
   justify-content: flex-end;
   box-sizing: border-box;
+  @media screen and (max-width: 576px) {
+    padding: 0 24px;
+  }
 `;
 
 const IntroSectionHeader = styled.h2`
@@ -82,6 +84,7 @@ const IntroSectionBodyContainer = styled.div`
   }
   @media screen and (max-width: 576px) {
     margin-top: 20px;
+    padding: 0 24px;
   }
 `;
 
