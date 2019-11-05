@@ -83,7 +83,8 @@ class ArtworkService {
         {id: 5, story_segment: artworkDB.story_segment_5 || ''}
       ],
       is_example: artworkDB.is_example,
-      created_by_user_id: artworkDB.created_by && artworkDB.created_by.id
+      created_by_user_id: artworkDB.created_by && artworkDB.created_by.id,
+      created_just_now: false
     }
 
   }

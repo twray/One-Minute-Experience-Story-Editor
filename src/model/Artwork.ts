@@ -14,6 +14,7 @@ export interface Artwork extends ArtworkBase {
   image_thumbnail_url?: string;
   story_segments: StorySegment[];
   created_by_user_id?: number;
+  created_just_now: boolean;
 }
 
 export interface ArtworkDB extends ArtworkBase {

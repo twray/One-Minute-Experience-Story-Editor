@@ -110,7 +110,8 @@ class StoryEditorScreen extends React.Component<
         artist_nationality: '',
         story_segments: [],
         is_example: false,
-        created_by_user_id: (AuthenticationService.loggedInUser && AuthenticationService.loggedInUser.id) || undefined
+        created_by_user_id: (AuthenticationService.loggedInUser && AuthenticationService.loggedInUser.id) || undefined,
+        created_just_now: true
       };
       newArtworks.unshift(newArtwork);
       this.setState({
@@ -120,6 +121,10 @@ class StoryEditorScreen extends React.Component<
         sidebarIsDisplayed: false
       });
     }
+  }
+
+  hidePhone = () => {
+    this.setState({displayedArtwork: null});
   }
 
   loadArtworks = async () => {
@@ -264,12 +269,16 @@ class StoryEditorScreen extends React.Component<
               onNewArtworkWithImage={this.handleNewArtwork}
               onImageUpdate={this.handleTitleCardImageSelect}
               onStorySegmentChange={this.handleStorySegmentChange}
+              onClose={this.hidePhone}
             />
             <PreviewImage artwork={displayedArtwork || undefined} />
           </React.Fragment>
         }
         {!displayedArtwork &&
-          <IntroSection onGetStartedButtonClick={this.addNewBlankArtwork} />
+          <IntroSection
+            artworks={artworks}
+            onGetStartedButtonClick={this.addNewBlankArtwork}
+          />
         }
       </StoryEditorContainer>
     );

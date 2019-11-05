@@ -2,6 +2,8 @@ import React from 'react';
 
 import styled from 'styled-components';
 
+import { Artwork, ArtworkStatus } from '../model/Artwork';
+
 import Button from './Button';
 
 const IntroSectionContainer = styled.div`
@@ -94,11 +96,21 @@ const GetStartedButton = styled(Button)`
 `;
 
 interface IntroSectionProps {
+  artworks?: Artwork[];
   onGetStartedButtonClick: () => void;
 }
 
 const IntroSection: React.FC<IntroSectionProps> = props => {
-  const { onGetStartedButtonClick } = props;
+
+  const { artworks, onGetStartedButtonClick } = props;
+
+  let displayCreateNewStoryButton: boolean = true;
+  if (artworks) {
+    if (artworks.find((artwork: Artwork) => artwork.status === ArtworkStatus.New)) {
+      displayCreateNewStoryButton = false;
+    }
+  }
+
   return (
     <IntroSectionContainer>
       <IntroSectionContainerInner>
@@ -133,11 +145,13 @@ const IntroSection: React.FC<IntroSectionProps> = props => {
             When writing, choose an angle that will become the "plot" of the story. For example, if you were looking at a painting, frame the story around the artist's painting technique or how it depicts the people and places in that painting.
           </p>
           <p>&nbsp;</p>
-          <GetStartedButton
-            text="Write your first story"
-            buttonStyle="tertiary"
-            onClick={() => onGetStartedButtonClick()}
-          />
+          {displayCreateNewStoryButton &&
+            <GetStartedButton
+              text="Create a New Story"
+              buttonStyle="tertiary"
+              onClick={() => onGetStartedButtonClick()}
+            />
+          }
           <p>&nbsp;</p>
         </IntroSectionBodyContainer>
       </IntroSectionContainerInner>

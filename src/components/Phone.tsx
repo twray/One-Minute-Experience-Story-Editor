@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleRight, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import { faAngleRight, faAngleLeft, faTimes  } from '@fortawesome/free-solid-svg-icons';
 
 import Button from '../components/Button';
 import { CardContainer } from '../components/Card';
@@ -27,11 +27,12 @@ const PhoneContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
   @media screen and (max-width: 576px) {
     background: none;
     margin: 0;
-    width: 100vh;
-    height: 100vw;
+    width: 100vw;
+    height: 100vh;
   }
 `;
 
@@ -108,6 +109,24 @@ const CardNavigationButton = styled.button`
   }
 `;
 
+const CloseButton = styled.button`
+  width: 72px;
+  height: 72px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  position: absolute;
+  top: 0;
+  margin-top: 10px;
+  right: -72px;
+  @media screen and (max-width: 576px) {
+    top: 0;
+    right: 0;
+    margin-top: 0;
+  }
+`;
+
 interface PhoneProps {
   artwork?: Artwork,
   storyPrompts: StoryPrompt[],
@@ -118,6 +137,7 @@ interface PhoneProps {
   onNewArtworkWithImage: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
   onImageUpdate: (artwork: Artwork, imageFile: File, imageFilename: string) => void;
   onStorySegmentChange: (storySegment: StorySegment) => void;
+  onClose: () => void;
 }
 
 interface PhoneState {
@@ -232,7 +252,8 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
       storyPrompts,
       isProcessing,
       onTitleCardChange,
-      onStorySegmentChange
+      onStorySegmentChange,
+      onClose
     } = this.props;
     const {
       phoneScreenWidth,
@@ -315,6 +336,12 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
             </Fragment>
           }
         </PhoneScreenContainer>
+        <CloseButton onClick={onClose}>
+          <FontAwesomeIcon
+            icon={faTimes} size="2x"
+            color={(window.innerWidth > 576 || (artwork && !artwork.image_url)) ? '#777777' : '#FFFFFF'}
+          />
+        </CloseButton>
       </PhoneContainer>
     );
   }

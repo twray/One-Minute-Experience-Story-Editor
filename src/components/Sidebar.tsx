@@ -134,7 +134,7 @@ const LogoutLink = styled.a`
     text-decoration: none;
   }
   display: none;
-  @media screen and (max-width: 576px) {
+  @media screen and (max-width: 1280px) {
     display: block;
   }
 `;
