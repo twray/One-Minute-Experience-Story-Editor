@@ -18,11 +18,6 @@ import {
   StoryPrompt
 } from '../model/Artwork';
 
-// TODO: Make the card carousel responsive,
-// adjust fixed pixel width value
-
-const phoneScreenWidth: number = 375;
-
 const PhoneContainer = styled.div`
   width: 410px;
   height: 820px;
@@ -32,6 +27,12 @@ const PhoneContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  @media screen and (max-width: 576px) {
+    background: none;
+    margin: 0;
+    width: 100vh;
+    height: 100vw;
+  }
 `;
 
 const PhoneScreenContainer = styled.div`
@@ -44,6 +45,11 @@ const PhoneScreenContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  @media screen and (max-width: 576px) {
+    max-width: none;
+    max-height: none;
+    justify-content: center;
+  }
 `;
 
 const PhoneScreenContainerBackground = styled.div`
@@ -78,6 +84,11 @@ const CardNavigation = styled.div`
   box-sizing: border-box;
   position: relative;
   z-index: 1;
+  max-height: 100px;
+  @media screen and (max-width: 576px) {
+    flex: 0.75;
+    padding: 0 45px;
+  }
 `;
 
 const CardNavigationButton = styled.button`
@@ -110,6 +121,7 @@ interface PhoneProps {
 }
 
 interface PhoneState {
+  phoneScreenWidth: number;
   xOffset: number;
   currentIndex: number;
   selectedImageFile? : File
@@ -119,10 +131,16 @@ interface PhoneState {
 class Phone extends React.Component<PhoneProps, PhoneState> {
 
   state = {
+    phoneScreenWidth: 375,
     xOffset: 0,
     currentIndex: 0,
     selectedImageFile: undefined,
     selectedImageFilename: ''
+  }
+
+  componentDidMount() {
+    this.setPhoneScreenWidth();
+    window.addEventListener('resize', () => this.setPhoneScreenWidth());
   }
 
   componentDidUpdate(prevProps: PhoneProps) {
@@ -134,10 +152,18 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
     }
   }
 
+  setPhoneScreenWidth = () => {
+    if (window.innerWidth > 576) {
+      this.setState({phoneScreenWidth: 375});
+    } else {
+      this.setState({phoneScreenWidth: window.innerWidth});
+    }
+  }
+
   setIndex = (index: number) => {
     this.setState({
       currentIndex: index,
-      xOffset: phoneScreenWidth * index
+      xOffset: this.state.phoneScreenWidth * index
     });
   }
 
@@ -208,7 +234,12 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
       onTitleCardChange,
       onStorySegmentChange
     } = this.props;
-    const { xOffset, selectedImageFile, currentIndex } = this.state;
+    const {
+      phoneScreenWidth,
+      xOffset,
+      selectedImageFile,
+      currentIndex
+    } = this.state;
     return (
       <PhoneContainer>
         <PhoneScreenContainer>

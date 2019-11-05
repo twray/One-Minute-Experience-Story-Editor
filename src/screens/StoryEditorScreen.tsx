@@ -27,6 +27,9 @@ const StoryEditorContainer = styled.div`
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  @media screen and (max-width: 768px) {
+    justify-content: center;
+  }
 `;
 
 interface StoryEditorScreenProps {
@@ -38,6 +41,7 @@ interface StoryEditorScreenState {
   displayedArtwork: Artwork|null;
   selectedCardIndex: number;
   isProcessing: boolean;
+  sidebarIsDisplayed: boolean;
   statusBarMessage?: string;
   statusBarError?: string;
 }
@@ -55,6 +59,7 @@ class StoryEditorScreen extends React.Component<
     displayedArtwork: null,
     selectedCardIndex: 0,
     isProcessing: false,
+    sidebarIsDisplayed: false,
     statusBarMessage: undefined,
     statusBarError: undefined
   }
@@ -65,6 +70,10 @@ class StoryEditorScreen extends React.Component<
 
   init = async () => await this.loadArtworks();
 
+  handleHamburgerMenuClick = () => {
+    this.setState({sidebarIsDisplayed: !this.state.sidebarIsDisplayed});
+  }
+
   handleTitleCardChange = (updatedArtwork: Artwork) => {
     this.updateArtworks(updatedArtwork);
   }
@@ -72,7 +81,8 @@ class StoryEditorScreen extends React.Component<
   handleArtworkSelect = (artwork: Artwork) => {
     this.setState({
       displayedArtwork: artwork,
-      selectedCardIndex: 0
+      selectedCardIndex: 0,
+      sidebarIsDisplayed: false
     });
   }
 
@@ -106,7 +116,8 @@ class StoryEditorScreen extends React.Component<
       this.setState({
         artworks: newArtworks,
         displayedArtwork: newArtwork,
-        selectedCardIndex: 0
+        selectedCardIndex: 0,
+        sidebarIsDisplayed: false
       });
     }
   }
@@ -214,6 +225,7 @@ class StoryEditorScreen extends React.Component<
       displayedArtwork,
       selectedCardIndex,
       isProcessing,
+      sidebarIsDisplayed,
       statusBarMessage,
       statusBarError
     } = this.state;
@@ -224,12 +236,16 @@ class StoryEditorScreen extends React.Component<
         <StatusBar
           message={statusBarMessage}
           error={statusBarError}
+          sidebarIsHidden={!sidebarIsDisplayed}
+          displayedArtwork={displayedArtwork}
           onLogoutButtonClick={() => onLoggedOut()}
+          onHamburgerMenuClick={() => this.handleHamburgerMenuClick()}
         />
         {artworks &&
           <Sidebar
             artworks={artworks}
             displayedArtwork={displayedArtwork || undefined}
+            isHidden={!sidebarIsDisplayed}
             onArtworkSelect={this.handleArtworkSelect}
             onArtworkDelete={this.handleDeleteArtwork}
             onArtworkAdd={this.addNewBlankArtwork}

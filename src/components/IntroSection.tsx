@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import Button from './Button';
 
 const IntroSectionContainer = styled.div`
-  height: 100%;
   max-width: 700px;
   margin: 0 38px;
   flex: 1;
@@ -14,6 +13,24 @@ const IntroSectionContainer = styled.div`
   justify-content: center;
   align-items: center;
   overflow: scroll;
+  & .desktop-only {
+    display: block;
+  }
+  & .mobile-only {
+    display: none;
+  }
+  @media screen and (max-width: 1280px) {
+    height: 100%;
+    margin: 0;
+  }
+  @media screen and (max-width: 576px) {
+    & .desktop-only {
+      display: none;
+    }
+    & .mobile-only {
+      display: block;
+    }
+  }
 `;
 
 const IntroSectionContainerInner = styled.div`
@@ -24,6 +41,14 @@ const IntroSectionContainerInner = styled.div`
   max-height: 820px;
   display: flex;
   flex-direction: column;
+  @media screen and (max-width: 1280px) {
+    max-height: none;
+    margin-top: 72px;
+    padding: 0 17px;
+  }
+  @media screen and (max-width: 576px) {
+    margin-top: 128px;
+  }
 `;
 
 const IntroSectionHeaderContainer = styled.div`
@@ -41,6 +66,7 @@ const IntroSectionHeader = styled.h2`
   margin: 0;
   color: #444444;
   padding: 0 0 18px 0;
+  line-height: 32px;
   font-family: 'sf_compact_textmedium';
   position: relative;
 `;
@@ -51,6 +77,9 @@ const IntroSectionBodyContainer = styled.div`
   line-height: 24px;
   & h3 {
     margin-top: 40px;
+  }
+  @media screen and (max-width: 576px) {
+    margin-top: 20px;
   }
 `;
 
@@ -74,17 +103,23 @@ const IntroSection: React.FC<IntroSectionProps> = props => {
           </IntroSectionHeader>
         </IntroSectionHeaderContainer>
         <IntroSectionBodyContainer>
-          <p>
+          <p className="desktop-only">
             You can use this tool to write short, informal stories about the objects you see in this museum. Visitors can use the One Minute mobile app to scan objects and read these stories.
+          </p>
+          <p className="mobile-only">
+            You can use this tool to write short, informal stories about the objects you see in this museum.
           </p>
           <h3>
             Getting started
           </h3>
-          <p>
-            First, find an object in the museum that interests you. Then search for that object using our online <a href="https://dams-brightonmuseums.org.uk/assetbank-pavilion/action/viewHome" target="_blank">digital media bank</a> and download its image. Feel free to search or browse other objects that you may find interesting.
+          <p className="desktop-only">
+            First, find an object in the museum that interests you. Then search for that object using our online <a href="https://dams-brightonmuseums.org.uk/assetbank-pavilion/action/viewHome" target="_blank" rel="noopener noreferrer">digital media bank</a> and download its image. Feel free to search or browse other objects that you may find interesting.
           </p>
-          <p>
-            Within this story editor tool, you can write a new story by clicking the <strong>+</strong> button at the top-left of the screen. To help you get started, we've provided some examples that you can look at.
+          <p className="desktop-only">
+            You can use this tool to write a story about that object. To help you get started, we've provided some examples that you can look at.
+          </p>
+          <p className="mobile-only">
+            First, find an object in the museum that interests you. Tap the menu icon to add a new story, or browse some of the examples we've provided for you.
           </p>
           <h3>
             Writing with a plot
@@ -98,6 +133,7 @@ const IntroSection: React.FC<IntroSectionProps> = props => {
             buttonStyle="tertiary"
             onClick={() => onGetStartedButtonClick()}
           />
+          <p>&nbsp;</p>
         </IntroSectionBodyContainer>
       </IntroSectionContainerInner>
     </IntroSectionContainer>

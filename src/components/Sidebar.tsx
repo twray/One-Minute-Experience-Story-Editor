@@ -1,9 +1,7 @@
 import React from 'react';
 
 import styled from 'styled-components';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
 
 import { Artwork, ArtworkStatus } from '../model/Artwork';
 
@@ -18,6 +16,26 @@ const SidebarContainer = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
+  background-color: #EFE6E7;
+  z-index: 2;
+  animation-name: appear-from-left-small-desktop-tablet;
+  animation-iteration-count: 1;
+  animation-duration: 0.3s;
+  @media screen and (max-width: 1280px) {
+    border-right: 1px solid #CCCCCC;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    margin-left: 0;
+    width: 350px;
+    &.hidden {
+      display: none;
+    }
+  }
+  @media screen and (max-width: 576px) {
+    width: 100%;
+  }
 `;
 
 const SidebarContainerInner = styled.div`
@@ -28,38 +46,51 @@ const SidebarContainerInner = styled.div`
   max-height: 820px;
   display: flex;
   flex-direction: column;
+  @media screen and (max-width: 1280px) {
+    max-height: none;
+  }
+  @media screen and (max-width: 576px) {
+    max-width: none;
+  }
 `;
 
 const SidebarHeaderContainer = styled.div`
   height: 76.5px;
-  width: 100%;
+  position: relative;
   display: flex;
   padding: 0 12px;
-  flex-direction: column;
-  justify-content: flex-end;
-  box-sizing: border-box;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  @media screen and (max-width: 1280px) {
+    height: 72px;
+  }
 `;
 
 const SidebarHeader = styled.h2`
   margin: 0;
+  padding: 16px 0 0 0;
   color: #999999;
-  padding: 0 0 18px 0;
   font-family: 'sf_compact_textmedium';
   position: relative;
+  @media screen and (max-width: 1280px) {
+    padding: 0 0 0 48px;
+  }
 `;
 
-const AddIconButton = styled.button`
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  background-color: transparent;
+const AddStory = styled.a`
+  margin: 0;
+  padding: 3px 0 0 0;
   position: absolute;
-  top: -1px;
-  right: 0;
-  border: none;
-  outline: none;
+  right: 14px;
+  color: #555555;
+  margin-top: 10px;
   cursor: pointer;
-`
+  @media screen and (max-width: 1280px) {
+    margin-top: 1px;
+    right: 22px;
+  }
+`;
 
 const SidebarBodyContainer = styled.div`
   height: 100vh;
@@ -69,6 +100,14 @@ const SidebarBodyContainer = styled.div`
   flex: 1;
   border-top: 1px solid #CCCCCC;
   border-bottom: 1px solid #CCCCCC;
+  position: relative;
+  @media screen and (max-width: 1280px) {
+    border-bottom: none;
+    max-height: none;
+  }
+  @media screen and (max-width: 576px) {
+    padding-bottom: 72px;
+  }
 `
 
 const ArtworkList = styled.div`
@@ -76,9 +115,32 @@ const ArtworkList = styled.div`
   overflow-y: scroll;
 `;
 
+const LogoutLink = styled.a`
+  color: #FFFFFF !important;
+  cursor: pointer;
+  padding: 24px;
+  background-color: #666666;
+  font-family: 'sf_compact_textmedium';
+  text-tranform: uppercase !important;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  &, &:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+  display: none;
+  @media screen and (max-width: 576px) {
+    display: block;
+  }
+`;
+
 interface SidebarProps {
   artworks?: Artwork[];
   displayedArtwork?: Artwork;
+  isHidden: boolean;
   onArtworkSelect: (artwork: Artwork) => void;
   onArtworkDelete: (artwork: Artwork) => void;
   onArtworkAdd: () => void;
@@ -89,6 +151,7 @@ const Sidebar: React.FC<SidebarProps> = props => {
   const {
     artworks,
     displayedArtwork,
+    isHidden,
     onArtworkSelect,
     onArtworkDelete,
     onArtworkAdd
@@ -102,16 +165,20 @@ const Sidebar: React.FC<SidebarProps> = props => {
     ...artworksToSort.filter((artwork: Artwork) => artwork.is_example && artwork.status !== ArtworkStatus.New)
   ];
 
+  const sidebarClasses = classNames({
+    'hidden': isHidden
+  });
+
   return (
-    <SidebarContainer>
+    <SidebarContainer className={sidebarClasses}>
       <SidebarContainerInner>
         <SidebarHeaderContainer>
           <SidebarHeader>
             Stories
-            <AddIconButton onClick={() => onArtworkAdd()}>
-              <FontAwesomeIcon icon={faPlus} size="2x" color="#777777" />
-            </AddIconButton>
           </SidebarHeader>
+          <AddStory onClick={() => onArtworkAdd()}>
+            Add New
+          </AddStory>
         </SidebarHeaderContainer>
         <SidebarBodyContainer>
           <ArtworkList>
@@ -130,6 +197,9 @@ const Sidebar: React.FC<SidebarProps> = props => {
               )
             })}
           </ArtworkList>
+          <LogoutLink>
+            Log out
+          </LogoutLink>
         </SidebarBodyContainer>
       </SidebarContainerInner>
     </SidebarContainer>

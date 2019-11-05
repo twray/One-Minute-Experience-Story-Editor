@@ -16,6 +16,16 @@
     font-style: normal;
 }
 
+/* Animations */
+@keyframes appear-from-left-small-desktop-tablet {
+  from {
+    transform: translateX(-300px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 /* Generic Styling for HTML, Body, App Container */
 
 body, html, #root {

@@ -44,7 +44,7 @@ const LoadingContainer = styled.div`
   padding: 30px;
 `;
 
-const LoadingText = styled.p`
+const LoadingText = styled.div`
   color: #FFFFFF;
   font-family: 'sf_compact_textmedium';
   text-align: center;
@@ -143,8 +143,8 @@ class TitleCard extends React.Component<
                 buttonSize="md"
                 text={
                   !artwork.image_url
-                    ? 'Add Photo ...'
-                    : 'Change Photo ...'
+                    ? (window.innerWidth > 576 ? 'Add Photo ...' : 'Take Photo ...')
+                    : (window.innerWidth <= 576 ? 'Change Photo ...' : 'Take Photo ...')
                 }
                 disabled={isProcessing}
                 onClick={() => imageFilePickerRef.current && imageFilePickerRef.current.click()}
@@ -153,6 +153,7 @@ class TitleCard extends React.Component<
                 ref={imageFilePickerRef}
                 type="file"
                 accept="image/*"
+                capture="camera"
                 onChange={this.handleImageSelect}
               />
             </React.Fragment>

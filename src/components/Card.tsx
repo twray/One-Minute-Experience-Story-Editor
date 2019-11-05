@@ -8,6 +8,11 @@ export const CardContainer = styled.div`
   margin-top: 100px;
   display: flex;
   justify-content: center;
+  @media screen and (max-width: 576px) {
+    max-width: none;
+    width: 100vw;
+    margin-top: 50px;
+  }
 `;
 
 export const Card = styled.div`

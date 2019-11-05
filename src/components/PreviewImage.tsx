@@ -13,6 +13,9 @@ const PreviewImageContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const PreviewImageContainerInner = styled.div`
@@ -40,7 +43,7 @@ const PreviewImage: React.FC<PreviewImageProps> = props => {
   return (
     <PreviewImageContainer>
       <PreviewImageContainerInner>
-        {artwork && artwork.image_with_aspect_ratio_url && 
+        {artwork && artwork.image_with_aspect_ratio_url &&
           <PreviewImageImage src={artwork.image_with_aspect_ratio_url} alt={artwork.title} />
         }
       </PreviewImageContainerInner>
