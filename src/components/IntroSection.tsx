@@ -24,6 +24,7 @@ const IntroSectionContainer = styled.div`
     margin: 0;
   }
   @media screen and (max-width: 576px) {
+    display: block;
     & .desktop-only {
       display: none;
     }
@@ -48,6 +49,7 @@ const IntroSectionContainerInner = styled.div`
   }
   @media screen and (max-width: 576px) {
     margin-top: 128px;
+    height: auto;
   }
 `;
 

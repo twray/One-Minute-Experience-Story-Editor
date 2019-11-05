@@ -146,6 +146,7 @@ interface SidebarProps {
   onArtworkSelect: (artwork: Artwork) => void;
   onArtworkDelete: (artwork: Artwork) => void;
   onArtworkAdd: () => void;
+  onLogoutButtonClick: () => void
 }
 
 const Sidebar: React.FC<SidebarProps> = props => {
@@ -156,7 +157,8 @@ const Sidebar: React.FC<SidebarProps> = props => {
     isHidden,
     onArtworkSelect,
     onArtworkDelete,
-    onArtworkAdd
+    onArtworkAdd,
+    onLogoutButtonClick
   } = props;
 
   const artworksToSort = artworks != null ? artworks : [];
@@ -199,7 +201,7 @@ const Sidebar: React.FC<SidebarProps> = props => {
               )
             })}
           </ArtworkList>
-          <LogoutLink>
+          <LogoutLink onClick={onLogoutButtonClick}>
             Log out
           </LogoutLink>
         </SidebarBodyContainer>

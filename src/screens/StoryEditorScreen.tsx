@@ -249,6 +249,7 @@ class StoryEditorScreen extends React.Component<
             onArtworkSelect={this.handleArtworkSelect}
             onArtworkDelete={this.handleDeleteArtwork}
             onArtworkAdd={this.addNewBlankArtwork}
+            onLogoutButtonClick={() => onLoggedOut()}
           />
         }
         {displayedArtwork &&
