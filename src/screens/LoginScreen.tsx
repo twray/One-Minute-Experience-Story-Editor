@@ -92,6 +92,21 @@ class LoginScreen extends React.Component<
     isLoggingIn: false
   }
 
+  // MOCK: Auto login
+  async componentDidMount() {
+    this.setState({
+      loginStatus: 'Logging in ...',
+      isLoggingIn: true
+    });
+    await this.authenticationService.login(
+      process.env.REACT_APP_MOCK_USERNAME || '',
+      process.env.REACT_APP_MOCK_PASSWORD || ''
+    );
+    if (AuthenticationService.token) {
+      this.props.onLoggedIn();
+    }
+  }
+
   handleLogInButtonClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {

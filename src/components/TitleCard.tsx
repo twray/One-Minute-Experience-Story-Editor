@@ -1,6 +1,7 @@
 import React, { ChangeEvent, RefObject, createRef } from 'react';
 
 import styled from 'styled-components';
+import loadImage from 'blueimp-load-image';
 
 import { Card } from './Card';
 import Button from './Button';
@@ -73,8 +74,21 @@ class TitleCard extends React.Component<
   handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       try {
-        const imageFile: File = e.target.files[0];
+        let imageFile: File = e.target.files[0];
         const imageFilename: string = imageFile.name;
+        try {
+          // Can we find EXIF data?
+          loadImage(imageFile, (img, data) => console.log(data), {meta: true, orientation: true});
+          // If possible, try and correct the image rotation if taken from the phone
+          const correctedImage: HTMLCanvasElement|HTMLImageElement = await new Promise(resolve => loadImage(imageFile, img => resolve(img), {orientation: true}));
+          const correctedImageCanvas: HTMLCanvasElement = (correctedImage as HTMLCanvasElement);
+          const correctedImageBlob: Blob = await new Promise(resolve => correctedImageCanvas.toBlob(blob => resolve((blob as File)), 'image/jpeg', 0.8));
+          const correctedImageFile: File = new File([correctedImageBlob], imageFile.name, {type: imageFile.type});
+          imageFile = correctedImageFile;
+        } catch {
+          console.log('An error occurred while parsing EXIF data from the image.');
+          console.log(e);
+        }
         this.props.onImageSelect(this.props.artwork, imageFile, imageFilename);
       } catch (e) {
         console.log('A problem occurred while loading the image file.');
