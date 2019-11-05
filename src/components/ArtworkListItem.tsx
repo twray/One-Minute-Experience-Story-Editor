@@ -24,10 +24,18 @@ const ArtworkListItemContainer = styled.div`
   color: #333333;
   cursor: pointer;
   position: relative;
-  &:hover, &.selected {
-    background-color: #DFDFDF;
+  .delete-icon-button {
+    display: block;
+  }
+  @media screen and (min-width: 577px) {
     .delete-icon-button {
-      display: block;
+      display: none;
+    }
+    &:hover, &.selected {
+      background-color: #DFDFDF;
+      .delete-icon-button {
+        display: block;
+      }
     }
   }
 `;
