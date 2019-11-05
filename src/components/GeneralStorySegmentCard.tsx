@@ -32,6 +32,7 @@ const StorySegmentSectionInput = styled.textarea`
   border-right: none;
   border-bottom: none;
   box-shadow: none !important;
+  -webkit-appearance: none !important;
   outline: none;
   background: none;
   resize: none;

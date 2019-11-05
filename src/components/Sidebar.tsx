@@ -51,6 +51,7 @@ const SidebarContainerInner = styled.div`
   }
   @media screen and (max-width: 576px) {
     max-width: none;
+    height: 100%;
   }
 `;
 
@@ -107,6 +108,7 @@ const SidebarBodyContainer = styled.div`
   }
   @media screen and (max-width: 576px) {
     padding-bottom: 72px;
+    height: auto;
   }
 `
 
