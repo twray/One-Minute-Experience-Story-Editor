@@ -26,6 +26,15 @@
   }
 }
 
+@keyframes swipe-up-from-bottom {
+  from {
+    transform: translateY(100vh);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 /* Generic Styling for HTML, Body, App Container */
 
 body {

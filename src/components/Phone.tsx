@@ -28,6 +28,9 @@ const PhoneContainer = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+  animation-name: swipe-up-from-bottom;
+  animation-iteration-count: 1;
+  animation-duration: 0.3s;
   @media screen and (max-width: 576px) {
     background: none;
     margin: 0;
