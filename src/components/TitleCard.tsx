@@ -158,7 +158,7 @@ class TitleCard extends React.Component<
                 text={
                   !artwork.image_url
                     ? (window.innerWidth > 576 ? 'Add Photo ...' : 'Take Photo ...')
-                    : (window.innerWidth <= 576 ? 'Change Photo ...' : 'Take Photo ...')
+                    : (window.innerWidth <= 576 ? 'Change Photo ...' : 'Change Photo ...')
                 }
                 disabled={isProcessing}
                 onClick={() => imageFilePickerRef.current && imageFilePickerRef.current.click()}

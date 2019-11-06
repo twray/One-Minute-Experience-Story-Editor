@@ -136,7 +136,7 @@ const IntroSection: React.FC<IntroSectionProps> = props => {
             You can use this tool to write a story about that object. To help you get started, we've provided some examples that you can look at.
           </p>
           <p className="mobile-only">
-            First, find an object in the museum that interests you. Tap the menu icon to add a new story, or browse some of the examples we've provided for you.
+            First, find an object in the museum that interests you. Tap the menu icon to browse some of the examples we've provided for you, or you can start writing your own story by tapping 'Add New'.
           </p>
           <h3>
             Writing with a plot
