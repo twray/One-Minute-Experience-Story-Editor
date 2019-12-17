@@ -4,6 +4,9 @@ import styled from 'styled-components';
 import classNames from 'classnames';
 
 import { Artwork, ArtworkStatus } from '../model/Artwork';
+import { UserRole } from '../model/User';
+
+import AuthenticationService from '../services/AuthenticationService';
 
 import ArtworkListItem from './ArtworkListItem';
 
@@ -180,9 +183,11 @@ const Sidebar: React.FC<SidebarProps> = props => {
           <SidebarHeader>
             Stories
           </SidebarHeader>
-          <AddStory onClick={() => onArtworkAdd()}>
-            Add New
-          </AddStory>
+          {AuthenticationService.loggedInUser && AuthenticationService.loggedInUser.primary_role !== UserRole.ContentEditor &&
+            <AddStory onClick={() => onArtworkAdd()}>
+              Add New
+            </AddStory>
+          }
         </SidebarHeaderContainer>
         <SidebarBodyContainer>
           <ArtworkList>

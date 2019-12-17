@@ -11,6 +11,9 @@ import {
   Artwork,
   UserUpdatableArtworkMetadata
 } from '../model/Artwork';
+import { UserRole } from '../model/User';
+
+import AuthenticationService from '../services/AuthenticationService';
 
 const ArtworkInfoForm = styled.div`
   display: flex;
@@ -151,6 +154,9 @@ class TitleCard extends React.Component<
           style={{backgroundImage: `url('${artwork.image_url}')`}}
         >
           {!artwork.is_example &&
+            AuthenticationService.loggedInUser &&
+            AuthenticationService.loggedInUser.id === artwork.created_by_user_id &&
+            AuthenticationService.loggedInUser.primary_role !== UserRole.ContentEditor &&
             <React.Fragment>
               <Button
                 buttonStyle="white-transparent"

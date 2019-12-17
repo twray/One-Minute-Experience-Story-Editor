@@ -1,4 +1,4 @@
-import { UserDB } from '../model/User';
+import { User, UserDB, UserRole, UserRoleDB } from '../model/User';
 
 export class AuthenticationError extends Error {
 
@@ -18,7 +18,7 @@ class AuthenticationService {
   static API_ROOT: string = process.env.REACT_APP_SERVER_API_ROOT || '';
 
   static token: string|null;
-  static loggedInUser: UserDB|null;
+  static loggedInUser: User|null;
   static refreshAuthTokenTimeout: number = 0;
 
   async login(username: string, password: string) {
@@ -51,13 +51,25 @@ class AuthenticationService {
 
         AuthenticationService.token = authResult.data.token;
 
-        const userResponse = await fetch(`${AuthenticationService.API_ROOT}/users/me`, {
+        const userResponse = await fetch(`${AuthenticationService.API_ROOT}/users/me?fields=*,roles.*.*`, {
           headers: {
             'Authorization': 'Bearer ' + AuthenticationService.token
           }
         });
         const userResult = await userResponse.json();
-        AuthenticationService.loggedInUser = userResult.data;
+        let loggedInUser: User = userResult.data;
+        if (userResult.data.roles) {
+          let highestRole: UserRole;
+          userResult.data.roles.forEach((role: UserRoleDB) => {
+            if (
+              role.role && role.role.name &&
+              highestRole !== UserRole.Administrator
+            ) {
+              loggedInUser.primary_role = role.role.name;
+            }
+          });
+        }
+        AuthenticationService.loggedInUser = loggedInUser;
 
         setTimeout(() => AuthenticationService.refreshAuthToken(), AuthenticationService.TOKEN_REFRESH_RATE * 1000);
         console.log('logged in with token: ' + AuthenticationService.token);

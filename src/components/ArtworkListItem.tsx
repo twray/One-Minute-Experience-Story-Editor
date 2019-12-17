@@ -6,6 +6,8 @@ import classNames from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
+import { UserRole } from '../model/User';
+
 import AuthenticationService from '../services/AuthenticationService';
 
 import { Artwork } from '../model/Artwork';
@@ -152,15 +154,16 @@ const ArtworkListItem: React.FC<ArtworkListItemProps> = props => {
       {!artwork.is_example &&
         AuthenticationService.loggedInUser &&
         AuthenticationService.loggedInUser.id === artwork.created_by_user_id &&
-        <DeleteIconButton
-          className="delete-icon-button"
-          onClick={(e: MouseEvent<HTMLButtonElement>) => {
-            e.stopPropagation();
-            onDelete(artwork)
-          }}
-        >
-          <FontAwesomeIcon icon={faTrashAlt} size="1x" color="#EE5E54" />
-        </DeleteIconButton>
+        AuthenticationService.loggedInUser.primary_role !== UserRole.ContentEditor &&
+          <DeleteIconButton
+            className="delete-icon-button"
+            onClick={(e: MouseEvent<HTMLButtonElement>) => {
+              e.stopPropagation();
+              onDelete(artwork)
+            }}
+          >
+            <FontAwesomeIcon icon={faTrashAlt} size="1x" color="#EE5E54" />
+          </DeleteIconButton>
       }
       {artwork.is_example && <ExampleText>Example</ExampleText>}
     </ArtworkListItemContainer>
