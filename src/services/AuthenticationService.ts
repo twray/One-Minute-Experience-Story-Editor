@@ -1,4 +1,4 @@
-import { User, UserDB, UserRole, UserRoleDB } from '../model/User';
+import { User, UserRole, UserRoleDB } from '../model/User';
 
 export class AuthenticationError extends Error {
 
