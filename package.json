@@ -2,7 +2,6 @@
   "name": "1me-story-editor",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://modgift.itu.dk/one-minute",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
     "@fortawesome/free-regular-svg-icons": "^5.11.2",
