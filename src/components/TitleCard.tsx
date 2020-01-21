@@ -80,8 +80,6 @@ class TitleCard extends React.Component<
         let imageFile: File = e.target.files[0];
         const imageFilename: string = imageFile.name;
         try {
-          // Can we find EXIF data?
-          loadImage(imageFile, (img, data) => console.log(data), {meta: true, orientation: true});
           // If possible, try and correct the image rotation if taken from the phone
           const correctedImage: HTMLCanvasElement|HTMLImageElement = await new Promise(resolve => loadImage(imageFile, img => resolve(img), {orientation: true}));
           const correctedImageCanvas: HTMLCanvasElement = (correctedImage as HTMLCanvasElement);

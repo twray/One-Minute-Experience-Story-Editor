@@ -72,7 +72,7 @@ class AuthenticationService {
         AuthenticationService.loggedInUser = loggedInUser;
 
         setTimeout(() => AuthenticationService.refreshAuthToken(), AuthenticationService.TOKEN_REFRESH_RATE * 1000);
-        console.log('logged in with token: ' + AuthenticationService.token);
+
       } else {
         throw new Error('Unable to login due to a token not being provided.');
       }
