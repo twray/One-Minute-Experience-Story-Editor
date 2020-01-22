@@ -46,7 +46,7 @@ class ArtworkService {
     return response;
   }
 
-  private artworkDBToArtwork(artworkDB: ArtworkDB): Artwork {
+  private artworkDBToArtwork(artworkDB: ArtworkDB, newlyCreated: boolean = false): Artwork {
 
     const artworkImage: ArtworkThumbnail|undefined = artworkDB.image
       && artworkDB.image.data
@@ -84,7 +84,8 @@ class ArtworkService {
       ],
       is_example: artworkDB.is_example,
       created_by_user_id: artworkDB.created_by && artworkDB.created_by.id,
-      created_just_now: false
+      created_just_now: false,
+      first_time_writing_story: newlyCreated
     }
 
   }
@@ -212,7 +213,7 @@ class ArtworkService {
           }));
           const result = await response.json();
           const { data } = result;
-          resolve(this.artworkDBToArtwork(data));
+          resolve(this.artworkDBToArtwork(data, true));
 
         } else {
 

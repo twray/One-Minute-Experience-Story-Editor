@@ -15,6 +15,7 @@ export interface Artwork extends ArtworkBase {
   story_segments: StorySegment[];
   created_by_user_id?: number;
   created_just_now: boolean;
+  first_time_writing_story: boolean;
 }
 
 export interface ArtworkDB extends ArtworkBase {

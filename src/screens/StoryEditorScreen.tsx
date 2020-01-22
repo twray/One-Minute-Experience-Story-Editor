@@ -111,7 +111,8 @@ class StoryEditorScreen extends React.Component<
         story_segments: [],
         is_example: false,
         created_by_user_id: (AuthenticationService.loggedInUser && AuthenticationService.loggedInUser.id) || undefined,
-        created_just_now: true
+        created_just_now: true,
+        first_time_writing_story: true
       };
       newArtworks.unshift(newArtwork);
       this.setState({
@@ -141,8 +142,14 @@ class StoryEditorScreen extends React.Component<
     try {
       const newArtworkWithImage = await this.artworkService.createArtwork(artwork, imageFile, imageFilename);
       const artworks = await this.artworkService.loadAllArtworks();
+      const artworksWithNewStory: Artwork[] = artworks.map((artwork: Artwork) => {
+        if (artwork.id === newArtworkWithImage.id) {
+          artwork.first_time_writing_story = newArtworkWithImage.first_time_writing_story;
+        }
+        return artwork;
+      });
       this.setState({
-        artworks: artworks,
+        artworks: artworksWithNewStory,
         displayedArtwork: newArtworkWithImage,
         selectedCardIndex: 1,
       });

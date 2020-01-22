@@ -8,6 +8,7 @@ import Button from '../components/Button';
 import { CardContainer } from '../components/Card';
 import TitleCard from '../components/TitleCard';
 import GeneralStorySegmentCard from '../components/GeneralStorySegmentCard';
+import FinishCard from '../components/FinishCard';
 
 import phoneShellImg from '../assets/images/phone-shell.svg';
 
@@ -175,6 +176,18 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
     }
   }
 
+  getNumOfCards = (): number => {
+    const { storyPrompts, artwork } = this.props;
+    return artwork && artwork.first_time_writing_story ? storyPrompts.length + 1 : storyPrompts.length;
+  }
+
+  getCardCarouselWidth = (): number => {
+    const { storyPrompts, artwork } = this.props;
+    const { phoneScreenWidth } = this.state;
+    const numOfAdditionalCards = artwork && artwork.first_time_writing_story ? 2 : 1;
+    return (storyPrompts.length * phoneScreenWidth) + (numOfAdditionalCards * phoneScreenWidth);
+  }
+
   setPhoneScreenWidth = () => {
     if (window.innerWidth > 576) {
       this.setState({phoneScreenWidth: 375});
@@ -234,7 +247,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
   }
 
   nextCard = () => {
-    if (this.state.currentIndex < (this.props.storyPrompts.length)) {
+    if (this.state.currentIndex < (this.getNumOfCards())) {
       const newIndex = this.state.currentIndex + 1
       this.setIndex(newIndex);
       this.props.onIndexChange && this.props.onIndexChange(newIndex);
@@ -259,7 +272,6 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
       onClose
     } = this.props;
     const {
-      phoneScreenWidth,
       xOffset,
       selectedImageFile,
       currentIndex
@@ -275,7 +287,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
               <CardCarousel style={
                 {
                   transform: `translateX(-${xOffset}px)`,
-                  width: `${(storyPrompts.length * phoneScreenWidth) + phoneScreenWidth}px`
+                  width: `${this.getCardCarouselWidth()}px`
                 }
               }>
                 <CardContainer>
@@ -305,6 +317,11 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
 
                   })
                 }
+                {artwork.first_time_writing_story &&
+                  <CardContainer>
+                    <FinishCard />
+                  </CardContainer>
+                }
               </CardCarousel>
               {artwork && artwork.status !== ArtworkStatus.New &&
                 <CardNavigation>
@@ -320,7 +337,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                     type="button"
                     value="Next"
                     onClick={this.nextCard}
-                    disabled={currentIndex === storyPrompts.length}
+                    disabled={currentIndex >= this.getNumOfCards()}
                     >
                     <FontAwesomeIcon icon={faAngleRight} size="2x" />
                   </CardNavigationButton>
