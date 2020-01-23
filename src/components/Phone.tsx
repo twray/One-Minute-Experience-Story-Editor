@@ -1,10 +1,11 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleRight, faAngleLeft, faTimes  } from '@fortawesome/free-solid-svg-icons';
 
 import Button from '../components/Button';
+import Pagination from '../components/Pagination';
 import { CardContainer } from '../components/Card';
 import TitleCard from '../components/TitleCard';
 import GeneralStorySegmentCard from '../components/GeneralStorySegmentCard';
@@ -92,7 +93,7 @@ const CardNavigation = styled.div`
   max-height: 100px;
   @media screen and (max-width: 576px) {
     flex: 0.75;
-    padding: 0 45px;
+    padding: 0 30px;
   }
 `;
 
@@ -178,14 +179,11 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
 
   getNumOfCards = (): number => {
     const { storyPrompts, artwork } = this.props;
-    return artwork && artwork.first_time_writing_story ? storyPrompts.length + 1 : storyPrompts.length;
+    return artwork && artwork.first_time_writing_story ? storyPrompts.length + 2 : storyPrompts.length + 1;
   }
 
   getCardCarouselWidth = (): number => {
-    const { storyPrompts, artwork } = this.props;
-    const { phoneScreenWidth } = this.state;
-    const numOfAdditionalCards = artwork && artwork.first_time_writing_story ? 2 : 1;
-    return (storyPrompts.length * phoneScreenWidth) + (numOfAdditionalCards * phoneScreenWidth);
+    return this.getNumOfCards() * this.state.phoneScreenWidth;
   }
 
   setPhoneScreenWidth = () => {
@@ -247,7 +245,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
   }
 
   nextCard = () => {
-    if (this.state.currentIndex < (this.getNumOfCards())) {
+    if (this.state.currentIndex < (this.getNumOfCards() - 1)) {
       const newIndex = this.state.currentIndex + 1
       this.setIndex(newIndex);
       this.props.onIndexChange && this.props.onIndexChange(newIndex);
@@ -269,6 +267,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
       isProcessing,
       onTitleCardChange,
       onStorySegmentChange,
+      onIndexChange,
       onClose
     } = this.props;
     const {
@@ -280,7 +279,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
       <PhoneContainer>
         <PhoneScreenContainer>
           {artwork &&
-            <Fragment>
+            <>
               <PhoneScreenContainerBackground
                 style={artwork ? {backgroundImage: `url('${artwork.image_url}')`} : {}}
               />
@@ -333,11 +332,16 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                   >
                     <FontAwesomeIcon icon={faAngleLeft} size="2x" />
                   </CardNavigationButton>
+                  <Pagination
+                    numItems={this.getNumOfCards()}
+                    selectedIndex={currentIndex}
+                    onSelect={onIndexChange}
+                  />
                   <CardNavigationButton
                     type="button"
                     value="Next"
                     onClick={this.nextCard}
-                    disabled={currentIndex >= this.getNumOfCards()}
+                    disabled={currentIndex >= (this.getNumOfCards() - 1)}
                     >
                     <FontAwesomeIcon icon={faAngleRight} size="2x" />
                   </CardNavigationButton>
@@ -353,7 +357,7 @@ class Phone extends React.Component<PhoneProps, PhoneState> {
                   />
                 </CardNavigation>
               }
-            </Fragment>
+            </>
           }
         </PhoneScreenContainer>
         <CloseButton onClick={onClose}>

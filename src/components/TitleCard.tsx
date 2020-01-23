@@ -155,7 +155,7 @@ class TitleCard extends React.Component<
             AuthenticationService.loggedInUser &&
             AuthenticationService.loggedInUser.id === artwork.created_by_user_id &&
             AuthenticationService.loggedInUser.primary_role !== UserRole.ContentEditor &&
-            <React.Fragment>
+            <>
               <Button
                 buttonStyle="white-transparent"
                 buttonSize="md"
@@ -174,7 +174,7 @@ class TitleCard extends React.Component<
                 capture="camera"
                 onChange={this.handleImageSelect}
               />
-            </React.Fragment>
+            </>
           }
         </ArtworkImagePicker>
         {isProcessing &&

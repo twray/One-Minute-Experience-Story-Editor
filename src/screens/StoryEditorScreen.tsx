@@ -265,7 +265,7 @@ class StoryEditorScreen extends React.Component<
           />
         }
         {displayedArtwork &&
-          <React.Fragment>
+          <>
             <Phone
               artwork={displayedArtwork || undefined}
               storyPrompts={StoryPrompts}
@@ -279,7 +279,7 @@ class StoryEditorScreen extends React.Component<
               onClose={this.hidePhone}
             />
             <PreviewImage artwork={displayedArtwork || undefined} />
-          </React.Fragment>
+          </>
         }
         {!displayedArtwork &&
           <IntroSection
