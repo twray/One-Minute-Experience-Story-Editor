@@ -64,6 +64,7 @@ const Input = styled.input`
 `;
 
 interface SingleLineInputProps {
+  type?: 'date'|'datetime-local'|'email'|'number'|'password'|'tel'|'text'|'url';
   label?: string;
   value?: string;
   placeholder?: string;
@@ -77,6 +78,7 @@ interface SingleLineInputProps {
 const SingleLineInput: React.FC<SingleLineInputProps> = (props) => {
 
   const {
+    type,
     label,
     value,
     placeholder,
@@ -100,7 +102,7 @@ const SingleLineInput: React.FC<SingleLineInputProps> = (props) => {
       {isOptional && !readOnly && <OptionalLabel>Optional</OptionalLabel>}
       <Input
         {...(label && {id: 'label-' + label.toLowerCase()})}
-        type="text"
+        type={type || 'text'}
         value={value || ''}
         placeholder={(placeholder && !readOnly) ? placeholder : ''}
         disabled={disabled || readOnly}

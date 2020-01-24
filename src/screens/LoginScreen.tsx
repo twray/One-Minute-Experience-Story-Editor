@@ -1,5 +1,7 @@
 import React, { MouseEvent, ChangeEvent } from 'react';
 
+import config from '../config/config.json';
+
 import styled from 'styled-components';
 
 import SingleLineInput from '../components/SingleLineInput';
@@ -75,6 +77,7 @@ interface LogInScreenProps {
 
 interface LoginScreenState {
   username: string;
+  password: string;
   loginStatus: string;
   isLoggingIn: boolean;
 }
@@ -88,40 +91,49 @@ class LoginScreen extends React.Component<
 
   state = {
     username: '',
-    loginStatus: ' ',
+    password: config.autoLoginPassword ? String(config.autoLoginPassword) : '',
+    loginStatus: '',
     isLoggingIn: false
   }
 
   handleLogInButtonClick = async (e: MouseEvent<HTMLButtonElement>) => {
+
     e.preventDefault();
+
+    const { username, password } = this.state;
+
     try {
       this.setState({
         loginStatus: 'Logging in ...',
         isLoggingIn: true
       });
-      await this.authenticationService.login(
-        this.state.username,
-        process.env.REACT_APP_MOCK_PASSWORD || ''
-      );
+      await this.authenticationService.login(username, password);
       if (AuthenticationService.token) {
         this.props.onLoggedIn();
       }
     } catch (e) {
       if (e.name === "AuthenticationError") {
         if (e.httpStatus === 422) {
-          this.setState({loginStatus: 'Please enter a valid e-mail.'});
+          this.setState({
+            loginStatus: 'Please enter a valid e-mail and password.',
+            password: ''
+          });
         } else if (e.httpStatus === 401 || e.httpStatus === 404) {
-          this.setState({loginStatus: 'This e-mail is not registered with us.'});
+          this.setState({
+            loginStatus: 'Invalid e-mail or password.',
+            password: ''
+          });
         }
       }
     } finally {
       this.setState({isLoggingIn: false});
     }
+
   }
 
   render() {
     const { loggingInAgain } = this.props;
-    const { username, loginStatus, isLoggingIn } = this.state;
+    const { username, password, loginStatus, isLoggingIn } = this.state;
     return (
       <LoginScreenContainer {...(loggingInAgain && {className: 'logging-in-again'})}>
         <LoginAreaContainer autoComplete="off">
@@ -137,6 +149,7 @@ class LoginScreen extends React.Component<
             {!loggingInAgain && 'Please log in with your e-mail address.'}
           </LogInText>
           <SingleLineInput
+            type="email"
             label="E-mail Address"
             inputStyle="dark"
             value={username}
@@ -144,6 +157,17 @@ class LoginScreen extends React.Component<
               username: e.target.value})
             }
           />
+          {!config.autoLoginPassword &&
+            <SingleLineInput
+              type="password"
+              label="Password"
+              inputStyle="dark"
+              value={password}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({
+                password: e.target.value})
+              }
+            />
+          }
           <LogInText>
             {loginStatus || ' '}
           </LogInText>
