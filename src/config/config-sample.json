@@ -1,5 +1,10 @@
 {
   "serverDBTable": "artwork",
   "serverAPIRoot": "[your-server-api-endpoint]",
-  "autoLoginPassword": false
+  "autoLoginPassword": false,
+  "branding": {
+    "loginScreenImageSrc": "one-minute-icon-dark.svg",
+    "loginScreenBackground": "#37474F",
+    "loginScreenTheme": "dark"
+  }
 }

@@ -9,10 +9,8 @@ import Button from '../components/Button';
 
 import AuthenticationService from '../services/AuthenticationService';
 
-import oneMinuteIconDark from '../assets/images/one-minute-icon-dark.svg';
-
 const LoginScreenContainer = styled.div`
-  background-color: #37474F;
+  background-color: ${config.branding.loginScreenBackground};
   position: absolute;
   top: 0;
   bottom: 0;
@@ -43,7 +41,7 @@ const LoginAreaContainer = styled.form`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: #FFFFFF;
+  color: ${config.branding.loginScreenTheme === 'dark' ? '#FFFFFF' : 'inherit'};
   @media screen and (max-width: 576px) {
     height: auto;
   }
@@ -138,7 +136,7 @@ class LoginScreen extends React.Component<
       <LoginScreenContainer {...(loggingInAgain && {className: 'logging-in-again'})}>
         <LoginAreaContainer autoComplete="off">
           <OneMinuteLoginIcon
-            src={oneMinuteIconDark}
+            src={config.branding.loginScreenImageSrc}
             alt="Welcome to the One Minute Story Editor"
           />
           <LogInHeader>
