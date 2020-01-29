@@ -5,6 +5,8 @@ import {
   ArtworkStatus
 } from '../model/Artwork';
 
+import config from "../config/config.json";
+
 import AuthenticationService, { AuthenticationError } from './AuthenticationService';
 
 export class APIError extends Error {
@@ -21,8 +23,8 @@ export class APIError extends Error {
 
 class ArtworkService {
 
-  API_ROOT: string = process.env.REACT_APP_SERVER_API_ROOT || '';
-  DB_TABLE: string = process.env.REACT_APP_DB_TABLE || '';
+  API_ROOT: string = config.serverAPIRoot;
+  DB_TABLE: string = config.serverDBTable;
 
   UPDATE_SERVICE_DEBOUNCE_TIME: number = 1000;
 

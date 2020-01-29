@@ -96,6 +96,8 @@ class LoginScreen extends React.Component<
     isLoggingIn: false
   }
 
+  componentDidMount = () => console.log(config);
+
   handleLogInButtonClick = async (e: MouseEvent<HTMLButtonElement>) => {
 
     e.preventDefault();
