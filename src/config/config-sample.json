@@ -1,0 +1,5 @@
+{
+  "serverDBTable": "artwork",
+  "serverAPIRoot": "[your-server-api-endpoint]",
+  "autoLoginPassword": false
+}
