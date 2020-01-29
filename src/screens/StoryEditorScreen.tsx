@@ -11,7 +11,7 @@ import PreviewImage from '../components/PreviewImage';
 import AuthenticationService from '../services/AuthenticationService';
 import ArtworkService from '../services/ArtworkService';
 
-import { StoryPrompts } from '../data/StoryPrompts';
+import StoryPrompts from '../data/StoryPrompts';
 
 import {
   Artwork,

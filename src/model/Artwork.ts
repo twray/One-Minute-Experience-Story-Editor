@@ -65,5 +65,4 @@ export interface StorySegment {
 export interface StoryPrompt {
   id: number;
   prompt: string;
-  example: string;
 }

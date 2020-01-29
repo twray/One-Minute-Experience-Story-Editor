@@ -13,6 +13,13 @@ const config: AppConfiguration = {
     loginScreenTheme: "dark"
   },
   dialog: {
+    storyPrompts: {
+      1: "Begin storytelling by describing the immediately noticeable element(s) in the artwork. What can you see with your own eyes?",
+      2: "Evoke curiosity with a statement, or perhaps a question, that leads up to the main interpretive content (the plot).",
+      3: "Explain and enlighten the reader with the plot of the story. Break the story into two sections: this is the first part.",
+      4: "Explain and enlighten the reader with the plot of the story. Break the story into two sections: ... and now for the second part.",
+      5: "Round up the story, leaving the reader with a curious mind, perhaps wanting more."
+    },
     introScreenDesktop: {
       welcomeMessage: "Welcome to the One Minute Story Editor",
       introHTML: (

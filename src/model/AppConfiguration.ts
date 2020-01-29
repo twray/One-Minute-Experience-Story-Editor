@@ -9,6 +9,13 @@ interface AppConfiguration {
     loginScreenTheme: "dark"|"light";
   };
   dialog: {
+    storyPrompts: {
+      1: string,
+      2: string,
+      3: string,
+      4: string,
+      5: string
+    }
     introScreenDesktop: {
       welcomeMessage: string;
       introHTML: JSX.Element;
