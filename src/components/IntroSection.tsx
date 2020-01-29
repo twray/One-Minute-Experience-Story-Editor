@@ -1,6 +1,10 @@
 import React from 'react';
 
+import config from '../config/config.json';
+
 import styled from 'styled-components';
+
+import JSONHTMLParserService from '../services/JsonHtmlParserService';
 
 import { Artwork, ArtworkStatus } from '../model/Artwork';
 
@@ -102,6 +106,8 @@ interface IntroSectionProps {
 
 const IntroSection: React.FC<IntroSectionProps> = props => {
 
+  const { introScreenDesktop, introScreenMobile } = config.dialog;
+
   const { artworks, onGetStartedButtonClick } = props;
 
   let displayCreateNewStoryButton: boolean = true;
@@ -116,35 +122,27 @@ const IntroSection: React.FC<IntroSectionProps> = props => {
       <IntroSectionContainerInner>
         <IntroSectionHeaderContainer>
           <IntroSectionHeader>
-            Welcome to the One Minute Story Editor
+            <div className="desktop-only">
+              {introScreenDesktop.welcomeMessage}
+            </div>
+            <div className="mobile-only">
+              {introScreenMobile.welcomeMessage}
+            </div>
           </IntroSectionHeader>
         </IntroSectionHeaderContainer>
         <IntroSectionBodyContainer>
-          <p className="desktop-only">
-            You can use this tool to write short, informal stories about the objects you see in this museum. Visitors can use the One Minute mobile app to scan objects and read these stories.
-          </p>
-          <p className="mobile-only">
-            You can use this tool to write short, informal stories about the objects you see in this museum.
-          </p>
-          <h3>
-            Getting started
-          </h3>
-          <p className="desktop-only">
-            First, find an object in the museum that interests you. Then search for that object using our online <a href="https://dams-brightonmuseums.org.uk/assetbank-pavilion/action/viewHome" target="_blank" rel="noopener noreferrer">digital media bank</a> and download its image. Feel free to search or browse other objects that you may find interesting.
-          </p>
-          <p className="desktop-only">
-            You can use this tool to write a story about that object. To help you get started, we've provided some examples that you can look at.
-          </p>
-          <p className="mobile-only">
-            First, find an object in the museum that interests you. Tap the menu icon to browse some of the examples we've provided for you, or you can start writing your own story by tapping 'Add New'.
-          </p>
-          <h3>
-            Writing with a plot
-          </h3>
-          <p>
-            When writing, choose an angle that will become the "plot" of the story. For example, if you were looking at a painting, frame the story around the artist's painting technique or how it depicts the people and places in that painting.
-          </p>
-          <p>&nbsp;</p>
+          <div
+            className="desktop-only"
+            dangerouslySetInnerHTML={
+              {__html: JSONHTMLParserService.parseJSON(introScreenDesktop.htmlElements)}
+            }>
+          </div>
+          <div
+            className="mobile-only"
+            dangerouslySetInnerHTML={
+              {__html: JSONHTMLParserService.parseJSON(introScreenMobile.htmlElements)}
+            }>
+          </div>
           {displayCreateNewStoryButton &&
             <GetStartedButton
               text="Create a New Story"
