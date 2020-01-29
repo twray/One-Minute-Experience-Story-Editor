@@ -5,7 +5,7 @@ import {
   ArtworkStatus
 } from '../model/Artwork';
 
-import config from "../config/config.json";
+import config from "../config/config";
 
 import AuthenticationService, { AuthenticationError } from './AuthenticationService';
 

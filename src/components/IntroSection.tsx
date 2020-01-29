@@ -1,10 +1,8 @@
 import React from 'react';
 
-import config from '../config/config.json';
+import config from '../config/config';
 
 import styled from 'styled-components';
-
-import JSONHTMLParserService from '../services/JsonHtmlParserService';
 
 import { Artwork, ArtworkStatus } from '../model/Artwork';
 
@@ -131,17 +129,11 @@ const IntroSection: React.FC<IntroSectionProps> = props => {
           </IntroSectionHeader>
         </IntroSectionHeaderContainer>
         <IntroSectionBodyContainer>
-          <div
-            className="desktop-only"
-            dangerouslySetInnerHTML={
-              {__html: JSONHTMLParserService.parseJSON(introScreenDesktop.htmlElements)}
-            }>
+          <div className="desktop-only">
+            {config.dialog.introScreenDesktop.introHTML}
           </div>
-          <div
-            className="mobile-only"
-            dangerouslySetInnerHTML={
-              {__html: JSONHTMLParserService.parseJSON(introScreenMobile.htmlElements)}
-            }>
+          <div className="mobile-only">
+            {config.dialog.introScreenMobile.introHTML}
           </div>
           {displayCreateNewStoryButton &&
             <GetStartedButton

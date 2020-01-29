@@ -1,6 +1,6 @@
 import { User, UserRole, UserRoleDB } from '../model/User';
 
-import config from "../config/config.json";
+import config from "../config/config";
 
 export class AuthenticationError extends Error {
 
