@@ -1,5 +1,7 @@
 import { User, UserRole, UserRoleDB } from '../model/User';
 
+import config from "../config/config.json";
+
 export class AuthenticationError extends Error {
 
   name: string = 'AuthenticationError';
@@ -15,7 +17,7 @@ export class AuthenticationError extends Error {
 class AuthenticationService {
 
   static TOKEN_REFRESH_RATE: number = 2400;
-  static API_ROOT: string = process.env.REACT_APP_SERVER_API_ROOT || '';
+  static API_ROOT: string = config.serverAPIRoot;
 
   static token: string|null;
   static loggedInUser: User|null;
