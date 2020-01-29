@@ -4,6 +4,7 @@
   "autoLoginPassword": false,
   "branding": {
     "loginScreenImageSrc": "one-minute-icon-dark.svg",
+    "loginScreenImageSize": "medium",
     "loginScreenBackground": "#37474F",
     "loginScreenTheme": "dark"
   }

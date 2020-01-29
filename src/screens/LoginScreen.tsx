@@ -29,7 +29,7 @@ const LoginScreenContainer = styled.div`
 `;
 
 const LoginAreaContainer = styled.form`
-  background-color: #37474F;
+  background-color: ${config.branding.loginScreenBackground};
   width: 100vw;
   height: 100vh;
   margin: 0;
@@ -49,7 +49,7 @@ const LoginAreaContainer = styled.form`
 
 const OneMinuteLoginIcon = styled.img`
   display: block;
-  width: 100px;
+  width: ${config.branding.loginScreenImageSize === 'large' ? '200' : '100'}px;
   margin-bottom: 30px;
 `;
 
@@ -132,6 +132,7 @@ class LoginScreen extends React.Component<
   render() {
     const { loggingInAgain } = this.props;
     const { username, password, loginStatus, isLoggingIn } = this.state;
+    const { loginScreenTheme } = config.branding;
     return (
       <LoginScreenContainer {...(loggingInAgain && {className: 'logging-in-again'})}>
         <LoginAreaContainer autoComplete="off">
@@ -149,7 +150,7 @@ class LoginScreen extends React.Component<
           <SingleLineInput
             type="email"
             label="E-mail Address"
-            inputStyle="dark"
+            inputStyle={loginScreenTheme === 'dark' ? 'dark' : 'normal'}
             value={username}
             onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({
               username: e.target.value})
@@ -159,7 +160,7 @@ class LoginScreen extends React.Component<
             <SingleLineInput
               type="password"
               label="Password"
-              inputStyle="dark"
+              inputStyle={loginScreenTheme === 'dark' ? 'dark' : 'normal'}
               value={password}
               onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({
                 password: e.target.value})
@@ -170,7 +171,7 @@ class LoginScreen extends React.Component<
             {loginStatus || ' '}
           </LogInText>
           <LogInButton
-            buttonStyle="white-transparent"
+            buttonStyle={loginScreenTheme === 'dark' ? 'white-transparent' : 'tertiary'}
             text="Log In"
             disabled={isLoggingIn}
             onClick={this.handleLogInButtonClick}
