@@ -4,7 +4,7 @@ import AppConfiguration from '../model/AppConfiguration';
 
 const config: AppConfiguration = {
   serverDBTable: "artwork",
-  serverAPIRoot: "[your-server-api-endpoint]",
+  serverAPIRoot: "[SERVER_API_ENDPOINT]",
   autoLoginPassword: false,
   branding: {
     loginScreenImageSrc: "one-minute-icon-dark.svg",
