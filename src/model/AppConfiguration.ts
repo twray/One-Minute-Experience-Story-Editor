@@ -1,6 +1,6 @@
 interface AppConfiguration {
-  serverDBTable: string;
   serverAPIRoot: string;
+  serverDBTable: string;
   autoLoginPassword: boolean|string;
   branding: {
     loginScreenImageSrc: string;

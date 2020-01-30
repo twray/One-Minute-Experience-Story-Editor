@@ -3,8 +3,8 @@ import React from 'react';
 import AppConfiguration from '../model/AppConfiguration';
 
 const config: AppConfiguration = {
-  serverDBTable: "artwork",
   serverAPIRoot: "[SERVER_API_ENDPOINT]",
+  serverDBTable: "artwork",
   autoLoginPassword: false,
   branding: {
     loginScreenImageSrc: "one-minute-icon-dark.svg",
