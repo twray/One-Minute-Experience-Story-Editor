@@ -3,7 +3,7 @@ import React from 'react';
 import AppConfiguration from '../model/AppConfiguration';
 
 const config: AppConfiguration = {
-  serverAPIRoot: "[SERVER_API_ENDPOINT]",
+  serverAPIRoot: "[SERVER_API_ROOT]",
   serverDBTable: "artwork",
   autoLoginPassword: false,
   branding: {
