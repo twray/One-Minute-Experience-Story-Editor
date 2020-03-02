@@ -141,6 +141,7 @@ class ArtworkService {
         let exampleArtworks: Artwork[] = [];
         let artworks: Artwork[] = [];
 
+        // const exampleArtworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[is_example]=1`, {
         const exampleArtworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[is_example]=1`, {
           headers: {
             'Authorization': 'Bearer ' + AuthenticationService.token
@@ -152,13 +153,18 @@ class ArtworkService {
 
         if (AuthenticationService.loggedInUser) {
 
-          const artworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[created_by]=${AuthenticationService.loggedInUser.id}&filter[is_example]=0`, {
+          // const artworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[created_by]=${AuthenticationService.loggedInUser.id}&filter[is_example]=0`, {
+          const artworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[created_by]=${AuthenticationService.loggedInUser.id}`, {
             headers: {
               'Authorization': 'Bearer ' + AuthenticationService.token
             }
           }));
           const artworksResult = await artworksResponse.json();
-          artworks = artworksResult.data.map((artworkDB: ArtworkDB): Artwork => this.artworkDBToArtwork(artworkDB));
+          artworks = artworksResult.data.filter((artworkDB: ArtworkDB) => {
+            return !artworkDB.is_example
+          }).map((artworkDB: ArtworkDB): Artwork => {
+            return this.artworkDBToArtwork(artworkDB)
+          });
 
         }
 
