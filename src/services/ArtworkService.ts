@@ -98,8 +98,6 @@ class ArtworkService {
 
       try {
 
-        console.log('uploading image');
-
         const formBody = new FormData();
         formBody.append('filename', imageFilename);
         formBody.append('data', imageFile);
@@ -141,7 +139,6 @@ class ArtworkService {
         let exampleArtworks: Artwork[] = [];
         let artworks: Artwork[] = [];
 
-        // const exampleArtworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[is_example]=1`, {
         const exampleArtworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[is_example]=1`, {
           headers: {
             'Authorization': 'Bearer ' + AuthenticationService.token
@@ -153,7 +150,6 @@ class ArtworkService {
 
         if (AuthenticationService.loggedInUser) {
 
-          // const artworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[created_by]=${AuthenticationService.loggedInUser.id}&filter[is_example]=0`, {
           const artworksResponse = this.validateResponse(await fetch(`${this.API_ROOT}/items/${this.DB_TABLE}?fields=*,image.*&sort=-created_on&filter[created_by]=${AuthenticationService.loggedInUser.id}`, {
             headers: {
               'Authorization': 'Bearer ' + AuthenticationService.token
@@ -188,8 +184,6 @@ class ArtworkService {
       if (artwork.status !== ArtworkStatus.New) {
         throw new Error('Cannot create artwork: artwork is not new');
       }
-
-      console.log('creating artwork');
 
       try {
 
@@ -251,8 +245,6 @@ class ArtworkService {
       clearTimeout(this.throttler);
       this.throttler = setTimeout(async () => {
 
-        console.log('updating artwork');
-
         try {
 
           const artworkDB: ArtworkDB = {
@@ -306,8 +298,6 @@ class ArtworkService {
       if (artwork.status === ArtworkStatus.New) {
         throw new Error('Cannot update artwork image: artwork does not exist');
       }
-
-      console.log('updating artwork image');
 
       try {
 
