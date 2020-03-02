@@ -53,14 +53,16 @@ class AuthenticationService {
 
         AuthenticationService.token = authResult.data.token;
 
-        const userResponse = await fetch(`${AuthenticationService.API_ROOT}/users/me?fields=*,roles.*.*`, {
+        const userResponse = await fetch(`${AuthenticationService.API_ROOT}/users/me?fields=*.*.*`, {
           headers: {
             'Authorization': 'Bearer ' + AuthenticationService.token
           }
         });
         const userResult = await userResponse.json();
         let loggedInUser: User = userResult.data;
-        if (userResult.data.roles) {
+        if (userResult.data.role) {
+          loggedInUser.primary_role = userResult.data.role.name;
+        } else if (userResult.data.roles) {
           let highestRole: UserRole;
           userResult.data.roles.forEach((role: UserRoleDB) => {
             if (
@@ -72,6 +74,7 @@ class AuthenticationService {
           });
         }
         AuthenticationService.loggedInUser = loggedInUser;
+        console.log(AuthenticationService.loggedInUser);
 
         setTimeout(() => AuthenticationService.refreshAuthToken(), AuthenticationService.TOKEN_REFRESH_RATE * 1000);
 
