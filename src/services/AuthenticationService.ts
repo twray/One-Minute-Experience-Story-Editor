@@ -74,7 +74,6 @@ class AuthenticationService {
           });
         }
         AuthenticationService.loggedInUser = loggedInUser;
-        console.log(AuthenticationService.loggedInUser);
 
         setTimeout(() => AuthenticationService.refreshAuthToken(), AuthenticationService.TOKEN_REFRESH_RATE * 1000);
 
