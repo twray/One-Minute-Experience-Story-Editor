@@ -30,6 +30,7 @@ export interface ArtworkDB extends ArtworkBase {
 
 export interface ArtworkImageDB {
   id: number;
+  private_hash: string;
   filename: string;
   data: ArtworkImageDataDB;
 }

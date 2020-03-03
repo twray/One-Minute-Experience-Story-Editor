@@ -50,22 +50,39 @@ class ArtworkService {
 
   private artworkDBToArtwork(artworkDB: ArtworkDB, newlyCreated: boolean = false): Artwork {
 
-    const artworkImage: ArtworkThumbnail|undefined = artworkDB.image
-      && artworkDB.image.data
-      && artworkDB.image.data.thumbnails.find((artworkImage: ArtworkThumbnail) => {
-      return artworkImage.dimension === "1024x1024";
-    });
+    let artworkImageAssetPath,
+        artworkThumbnailURL,
+        artworkImageURL,
+        artworkImageURLWithAspectRatio;
 
-    const artworkImageURL = artworkImage ? artworkImage.url : '';
-    const artworkImageURLWithAspectRatio = artworkImage ? (artworkImage.url && artworkImage.url.replace('/crop/', '/contain/')) : '';
+    if (artworkDB.image && artworkDB.image.private_hash !== undefined) {
 
-    const artworkThumbnail: ArtworkThumbnail|undefined = artworkDB.image
-      && artworkDB.image.data
-      && artworkDB.image.data.thumbnails.find((artworkImage: ArtworkThumbnail) => {
-      return artworkImage.dimension === "200x200";
-    });
+      artworkImageAssetPath = `${config.serverAPIRoot}/assets/${artworkDB.image.private_hash}`;
+      artworkThumbnailURL = `${artworkImageAssetPath}?w=200&h=200&f=contain&q=80`;
+      artworkImageURL = `${artworkImageAssetPath}?w=1024&h=1024&f=contain&q=80`;
+      artworkImageURLWithAspectRatio = `${artworkImageAssetPath}?w=1024&h=1024&f=contain&q=80`;
 
-    const artworkThumbnailURL = artworkThumbnail ? artworkThumbnail.url : '';
+    } else if (artworkDB.image && artworkDB.image.private_hash === undefined) {
+
+      const artworkImage: ArtworkThumbnail|undefined = artworkDB.image.data &&
+        artworkDB.image.data.thumbnails.find((artworkImage: ArtworkThumbnail) => {
+        return artworkImage.dimension === "1024x1024";
+      });
+
+      artworkImageURL = artworkImage ? artworkImage.url : '';
+      artworkImageURLWithAspectRatio = artworkImage ? (artworkImage.url && artworkImage.url.replace('/crop/', '/contain/')) : '';
+
+      const artworkThumbnail: ArtworkThumbnail|undefined = artworkDB.image.data &&
+        artworkDB.image.data.thumbnails.find((artworkImage: ArtworkThumbnail) => {
+        return artworkImage.dimension === "200x200";
+      });
+
+      artworkThumbnailURL = artworkThumbnail ? artworkThumbnail.url : '';
+
+    }
+
+    /*
+    */
 
     return {
       id: artworkDB.id,
@@ -74,9 +91,9 @@ class ArtworkService {
       artist_name: artworkDB.artist_name,
       artist_nationality: artworkDB.artist_nationality,
       year: artworkDB.year,
-      image_url: artworkImageURL,
-      image_with_aspect_ratio_url: artworkImageURLWithAspectRatio,
-      image_thumbnail_url: artworkThumbnailURL,
+      image_url: artworkImageURL || '',
+      image_with_aspect_ratio_url: artworkImageURLWithAspectRatio || '',
+      image_thumbnail_url: artworkThumbnailURL || '',
       story_segments: [
         {id: 1, story_segment: artworkDB.story_segment_1 || ''},
         {id: 2, story_segment: artworkDB.story_segment_2 || ''},
