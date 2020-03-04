@@ -116,9 +116,8 @@ class ArtworkService {
       try {
 
         const formBody = new FormData();
-        formBody.append('filename', imageFilename);
         formBody.append('data', imageFile);
-;
+
         const response = this.validateResponse(await fetch(`${this.API_ROOT}/files`, {
           method: 'POST',
           headers: {
